@@ -1,0 +1,25 @@
+Package: CorDiffViz
+Type: Package
+Title: Visualization for Differential Correlation Matrices
+Version: 0.1.0
+Author: Shiqing Yu, Anru Zhang (for Cai_Zhang.R)
+Maintainer: Shiqing Yu <sqyu@uw.edu>
+Description: R Package for Visualizing Differential Correlations.  
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Suggests:
+    igraph,
+    MASS,
+    corrplot,
+    rjson,
+    ccaPP,
+    parallel,
+    knitr,
+    stats,
+    utils,
+    stringr
+Imports: Rdpack
+RdMacros: Rdpack
+RoxygenNote: 7.0.2
+VignetteBuilder: knitr
