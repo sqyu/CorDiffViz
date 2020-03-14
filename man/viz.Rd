@@ -74,7 +74,28 @@ Main function for estimating and writing self/differential correlation matrices 
 \details{
 If \code{dat1Y} and \code{dat2Y} are \code{NULL}, the function estimates the difference \code{cor(dat1X) - cor(dat2X)} and truncates to 0 the entries that are below a certain threshold determined by parameteric/permutation tests.
 If \code{dat1Y} and \code{dat2Y} are not \code{NULL}, the difference \code{cor(dat1X, dat1Y) - cor(dat2X, dat2Y)} is estimated.
+The dimensions must be as follows: \code{dat1X} has dimension n1 x pX, \code{dat2X} n2 x pX, and if provided, \code{dat1Y} n1 x pY and \code{dat2Y} n2 x pY.
 }
 \examples{
-# For examples, please see the demo in the corresponding script package for visualization.
+dat0 <- read.csv(file.path(path.package("CorDiffViz"), "extdata/sample_data.csv"))
+# First column of dat0 is the group (dat1 or dat2)
+dat1 <- dat0[dat0$Group=="AA", 2:10][1:13,] # 13 x 9
+dat2 <- dat0[dat0$Group=="BB", 2:10][1:15,] # 15 x 9
+# Self correlations
+viz(dat_name="exmp_self", dat1X=dat1, dat2X=dat2, dat1Y=NULL, dat2Y=NULL,
+    name_dat1="AA", name_dat2="BB", 
+    cor_names=c("pearson","spearman", "kendall","nonparaspearman","nonparakendall"),
+    permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY", verbose=TRUE,
+    make_plot=TRUE, parallel=FALSE, perm_seed=1, Cai_seed=1, layout_seed=1)
+# Correlations between variables in group X = {1:4} and variables in group Y = {5:9}
+viz(dat_name="exmp_XY", dat1X=dat1[,1:(ncol(dat1)/2)], dat2X=dat2[,1:(ncol(dat1)/2)], 
+    dat1Y=dat1[,(ncol(dat1)/2+1):ncol(dat1)], dat2Y=dat2[,(ncol(dat1)/2+1):ncol(dat1)], 
+    name_dat1="AA", name_dat2="BB", 
+    cor_names=c("pearson","spearman", "kendall","nonparaspearman","nonparakendall"), 
+    permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY", verbose=TRUE, 
+    make_plot=TRUE, parallel=FALSE, perm_seed=1, layout_seed=1)
+    
+# Remove folders for the examples generated above
+unlink(c("dats/exmp_self", "dats/exmp_XY", "plots/exmp_self", "plots/exmp_XY"), recursive=TRUE)
+setup_js_html()
 }

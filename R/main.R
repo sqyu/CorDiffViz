@@ -212,16 +212,36 @@ save_print_plot_diff <- function(mat, cor_name, mode, Xnames, Ynames,
 #' @details
 #' If \code{dat1Y} and \code{dat2Y} are \code{NULL}, the function estimates the difference \code{cor(dat1X) - cor(dat2X)} and truncates to 0 the entries that are below a certain threshold determined by parameteric/permutation tests.
 #' If \code{dat1Y} and \code{dat2Y} are not \code{NULL}, the difference \code{cor(dat1X, dat1Y) - cor(dat2X, dat2Y)} is estimated.
+#' The dimensions must be as follows: \code{dat1X} has dimension n1 x pX, \code{dat2X} n2 x pX, and if provided, \code{dat1Y} n1 x pY and \code{dat2Y} n2 x pY.
 #' @return Does not return anything, but instead creates folders and files under \code{file.path("dats", dat_name)} and \code{file.path("plots", dat_name)}.
 #' @examples
-#' # For examples, please see the demo in the corresponding script package for visualization.
+#' dat0 <- read.csv(file.path(path.package("CorDiffViz"), "extdata/sample_data.csv"))
+#' # First column of dat0 is the group (dat1 or dat2)
+#' dat1 <- dat0[dat0$Group=="AA", 2:10][1:13,] # 13 x 9
+#' dat2 <- dat0[dat0$Group=="BB", 2:10][1:15,] # 15 x 9
+#' # Self correlations
+#' viz(dat_name="exmp_self", dat1X=dat1, dat2X=dat2, dat1Y=NULL, dat2Y=NULL,
+#'     name_dat1="AA", name_dat2="BB", 
+#'     cor_names=c("pearson","spearman", "kendall","nonparaspearman","nonparakendall"),
+#'     permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY", verbose=TRUE,
+#'     make_plot=TRUE, parallel=FALSE, perm_seed=1, Cai_seed=1, layout_seed=1)
+#' # Correlations between variables in group X = {1:4} and variables in group Y = {5:9}
+#' viz(dat_name="exmp_XY", dat1X=dat1[,1:(ncol(dat1)/2)], dat2X=dat2[,1:(ncol(dat1)/2)], 
+#'     dat1Y=dat1[,(ncol(dat1)/2+1):ncol(dat1)], dat2Y=dat2[,(ncol(dat1)/2+1):ncol(dat1)], 
+#'     name_dat1="AA", name_dat2="BB", 
+#'     cor_names=c("pearson","spearman", "kendall","nonparaspearman","nonparakendall"), 
+#'     permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY", verbose=TRUE, 
+#'     make_plot=TRUE, parallel=FALSE, perm_seed=1, layout_seed=1)
+#'     
+#' # Remove folders for the examples generated above
+#' unlink(c("dats/exmp_self", "dats/exmp_XY", "plots/exmp_self", "plots/exmp_XY"), recursive=TRUE)
+#' setup_js_html()
 #' @export
 viz <- function(dat_name, dat1X, dat2X, dat1Y=NULL, dat2Y=NULL, name_dat1="1", name_dat2="2",
                 cor_names=c("pearson","kendall","spearman","nonparakendall","nonparaspearman"), 
                 permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY",
                 parallel=FALSE, verbose=TRUE, make_plot=TRUE, perm_seed=NULL, 
                 Cai_seed=NULL, layout_seed=NULL){
-  ## In summary: dat1X has dimension n1*px, dat2X n2*px, dat1Y n1*py, dat2Y n2*py
   if (nchar(stringr::str_extract(dat_name, "[a-zA-Z0-9_]+")) != nchar(dat_name))
     stop("dat_name can only contain alphanumerics and underscore.")
   if (name_dat1 == "" || name_dat2 == "" || !is.character(name_dat1) || !is.character(name_dat2) || name_dat1 == name_dat2)
@@ -360,6 +380,6 @@ viz <- function(dat_name, dat1X, dat2X, dat1Y=NULL, dat2Y=NULL, name_dat1="1", n
     if (verbose) cat("Calculations for ", cor_name, " correlations done.","\n", rep("*",80),"\n",sep="")
   }
   
-  setup_js_html(dat_name)
+  setup_js_html()
   if (verbose) cat("Done.\n")
 }

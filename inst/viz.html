@@ -42,7 +42,7 @@ var w = 650, // ideal width for correlation plot; may be changed for the corr pl
 			window.location.reload(true);
 		folder_name = folderDropdown.options[window.name].value;
 		if (folder_name === "NotFound")
-			alert("If you are not seeing the folder name you are looking for, you probably changed your folder name manually after using our R code to generate it. In that case, please open the html file in an editor, and manually edit the folder list by searching for 'folder_names'.");
+			alert("If you are not seeing the folder name you are looking for, you probably changed your folder name manually after using our R code to generate it. In that case, please call setup_js_html() in R from the current folder.");
 		console.log("Folder name: " + folder_name);
 		// Dynamically load the files using the folder name provided by the useer
 	    for (let file of ['dat.json', 'cors.json',  'diffs.json', 'graphs.json']) {
