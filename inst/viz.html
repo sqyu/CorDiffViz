@@ -4,6 +4,7 @@
 	<title>Visualization for Differential Correlations</title>
 </head>
 <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/1.6.5/cytoscape-cose-bilkent.js"></script>
 <body>
 <div class="select-folder-div">
 	<select id="select-folder" onchange="change_data(false)" style="position:relative; text-align:left;">
@@ -88,7 +89,6 @@ var w = 650, // ideal width for correlation plot; may be changed for the corr pl
 <script type="text/javascript" src="dats/diffs.json"></script>
 <script type="text/javascript" src="dats/graphs.json"></script>
 <script src='scripts/cytoscape.min.js'></script>-->
-<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/1.6.5/cytoscape-cose-bilkent.js"></script>
 <link href="scripts/style.css" rel="stylesheet" />
 
 
@@ -105,7 +105,7 @@ var w = 650, // ideal width for correlation plot; may be changed for the corr pl
 			<input type='radio' name="whichlayout" value="concentric" id="whichlayout2" /><label for="whichlayout2" class="radio_text" style="display:none"> Concentric</label>
 			<input type='radio' name="whichlayout" value="breadthfirst" id="whichlayout3" /><label for="whichlayout3" class="radio_text" style="display:none"> Breadthfirst</label>
 			<input type='radio' name="whichlayout" value="cose" id="whichlayout4" /><label for="whichlayout4" class="radio_text" style="display:none"> CoSE</label>
-			<input type='radio' name="whichlayout" value="cose-bilkent" id="whichlayout5" /><label for="whichlayout5" class="radio_text" style="display:none"> CoSE-Bilkent</label>
+			<!-- Deleted since suddenly failed: <input type='radio' name="whichlayout" value="cose-bilkent" id="whichlayout5" /><label for="whichlayout5" class="radio_text" style="display:none"> CoSE-Bilkent</label>-->
 		</form>
 	</section>
 </div>

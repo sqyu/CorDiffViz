@@ -47,9 +47,13 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
             }
         }]
 	}
+  
 	var graph_name = two ? ("graph_diff_"+cortype+"_"+testtype) : ("graph_"+cortype+"_"+testtype+"_"+whichrawdat),
 		edge_name = graph_name + "_edges",
-		max_degree = parseInt(window[graph_name + "_maxDegree"], 10);
+		max_degree = parseInt(window[graph_name + "_maxDegree"], 10),
+    node_size_mult_min = 5, node_size_mult_max = 10,
+    node_size_slope = (Math.log(node_size_mult_max) - Math.log(node_size_mult_min)) / Math.log(max_degree + 1),
+    node_size_func = function(node){return node.length * node_size_mult_min * Math.exp(node_size_slope * Math.log(node.degree(false) + 1))};
 
 	console.log(graph_name);
 	console.log(window[edge_name]);
@@ -96,8 +100,8 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
         {
         	selector: 'node',
         	style: {
-        		width: function(node){return node.length * 10 * Math.pow(Math.log(1+node.degree(false)), 2) / Math.pow(Math.log(1+max_degree), 2)},
-        		height: function(node){return node.length * 10 * Math.pow(Math.log(1+node.degree(false)), 2) / Math.pow(Math.log(1+max_degree), 2)}
+        		width: node_size_func,
+        		height: node_size_func
         	}
         },
         {
@@ -139,7 +143,7 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
   		let cor_list = "Neighbors of " + node.data("id") + " and the " + (two ? "differential " : "") + "correlations:<br/><br/>";
   		let cor_object = [];
   		for (neighbor_node of node.neighborhood("node"))
-  			cor_object.push([neighbor_node.data('id'), node.edgesWith(neighbor_node).data('value')[""]]);
+  			cor_object.push([neighbor_node.data('id'), node.edgesWith(neighbor_node).data('value')]);
   		cor_object.sort(function(a, b) {return Math.abs(b[1]) - Math.abs(a[1]);});
   		for (let pair of cor_object)
   			cor_list = cor_list + pair[0] + ": " + (Math.round(pair[1]*1000)/1000) + "<br/>";
@@ -153,7 +157,7 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
   		cy.elements().difference(edge.connectedNodes()).not(edge).addClass('transparent');
   		edge.addClass('highlight').connectedNodes().addClass('highlight');
   		console.log(edge);
-  		let cor_list = "Node 1: " + edge.data("source") + "<br/><br/>Node 2: " + edge.data("target") + "<br><br/>" + (two ? "Differential c" : "C") + "orrelation: " + (Math.round(edge.data('value')[""]*1000)/1000);
+  		let cor_list = "Node 1: " + edge.data("source") + "<br/><br/>Node 2: " + edge.data("target") + "<br><br/>" + (two ? "Differential c" : "C") + "orrelation: " + (Math.round(edge.data('value')*1000)/1000);
   		document.getElementById("cor_list").style["font-size"] = cyto_cor_text_size + "px";
   		document.getElementById("cor_list").innerHTML = cor_list;
 	}
