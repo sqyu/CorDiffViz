@@ -138,7 +138,7 @@ graph_json <- function(mats, filename, graph_names, row_names, col_names=NULL, t
 #' 
 #' @details
 #' Copies inst/scripts and inst/viz.html from package to the current folder.
-#' Then inserts subfolder names under "dats/" that contain "cors.json", "dat.json" and "graphs.json" in viz.html between the lines "folder_names = [" and "]".
+#' Then inserts subfolder names under "dats/" that contain "cors.json", "dat.json", "diffs.json" and "graphs.json" in viz.html between the lines "folder_names = [" and "]".
 #' @return Does not return anything.
 #' @examples
 #' setup_js_html()
@@ -157,7 +157,7 @@ setup_js_html <- function(){
     if (grepl("folder_names\\s*=", line)) {
       writeLines("folder_names = [", g)
       dat_names <- Filter(function(f){dir.exists(file.path("dats", f)) &&
-          all(c("cors.json", "dat.json", "graphs.json") %in% list.files(file.path("dats", f)))},
+          all(c("cors.json", "dat.json", "diffs.json", "graphs.json") %in% list.files(file.path("dats", f)))},
           list.files("dats"))
       writeLines(c(paste("\t\"", unique(dat_names), "\"", collapse=",\n", sep=""), "]"), g)
       while (!grepl("^\\s*\\]", line)) # Skip all lines until hitting the first "]"
