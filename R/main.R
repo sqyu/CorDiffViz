@@ -48,6 +48,8 @@ pct_ones <- function(preds, Ygiven) {
 }
 
 make_heat_map <- function(mat, cor_name, filename, verbose, plot_folder) {
+  if (!requireNamespace("corrplot", quietly = TRUE))
+    utils::install.packages("corrplot")
   file_path <- file.path(plot_folder, cor_name, filename)
   if (verbose) cat("Making heat map ", file_path, ".\n", sep="")
   graphics::par(mar=c(1,1,1,1))
@@ -135,6 +137,8 @@ save_print_plot_one <- function(raw_cors, cors, ps, cor_name, mode, Xnames, Ynam
 }
 
 plot_undirected <- function(mat, cor_name, node_names, filename, main, verbose, plot_folder, layout_seed=NULL) {
+  if (!requireNamespace("igraph", quietly = TRUE))
+    utils::install.packages("igraph")
   if (length(dim(mat)) != 2 || nrow(mat) != ncol(mat)) 
     stop("plot_undirected: mat must be a square matrix.")
   file_path <- file.path(plot_folder, cor_name, filename)

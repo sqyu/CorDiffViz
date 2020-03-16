@@ -1,8 +1,6 @@
 # Slightly adapted from code provided by Anru Zhang anru.stat@gmail.com
 # Cai, T. T., & Zhang, A. (2016). Inference for high-dimensional differential correlation matrices. Journal of multivariate analysis, 143, 107-126.
 
-#library(psych)
-#library(MASS)
 
 sample.cov <- function(X, Y=NULL){ # Calculate sample covariance matrix
   n <- nrow(X)

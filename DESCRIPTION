@@ -10,16 +10,16 @@ Encoding: UTF-8
 LazyData: true
 Suggests:
     igraph,
-    MASS,
     corrplot,
-    rjson,
+    knitr
+Imports: 
     ccaPP,
     parallel,
-    knitr,
+    Rdpack,
+    rjson,
     stats,
-    utils,
-    stringr
-Imports: Rdpack
+    stringr,
+    utils
 RdMacros: Rdpack
 RoxygenNote: 7.0.2
 VignetteBuilder: knitr

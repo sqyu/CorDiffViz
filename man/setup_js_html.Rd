@@ -14,7 +14,7 @@ Sets up the html and javascript scripts in the current folder for visualization.
 }
 \details{
 Copies inst/scripts and inst/viz.html from package to the current folder.
-Then inserts subfolder names under "dats/" that contain "cors.json", "dat.json" and "graphs.json" in viz.html between the lines "folder_names = [" and "]".
+Then inserts subfolder names under "dats/" that contain "cors.json", "dat.json", "diffs.json" and "graphs.json" in viz.html between the lines "folder_names = [" and "]".
 }
 \examples{
 setup_js_html()

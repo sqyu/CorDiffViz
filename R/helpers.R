@@ -1,10 +1,3 @@
-#for (pack in c("corrplot", "igraph", "rjson", "ccaPP", "parallel")){
-#  if (!require(pack, character.only = TRUE)){
-#    install.packages(pack, dep=TRUE)
-#    require(pack, character.only = TRUE)
-#  }
-#}
-
 writetojson <- function(json, filename){
   fileConn <- file(filename)
   writeLines(json, fileConn)
