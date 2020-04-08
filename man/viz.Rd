@@ -12,7 +12,7 @@ viz(
   dat2Y = NULL,
   name_dat1 = "1",
   name_dat2 = "2",
-  cor_names = c("pearson", "kendall", "spearman", "nonparakendall", "nonparaspearman"),
+  cor_names = c("pearson", "kendall", "spearman", "sin_kendall", "sin_spearman"),
   permutation = TRUE,
   alpha = 0.05,
   sides = 2,
@@ -41,7 +41,7 @@ viz(
 
 \item{name_dat2}{A string, name for the second sample. Defaults to "2".}
 
-\item{cor_names}{A string or a vector of strings, name(s) of correlation types to be estimated. Must be chosen from \code{"pearson"}, \code{"kendall"}, \code{"spearman"}, \code{"nonparakendall"}, and \code{"nonparaspearman"}.}
+\item{cor_names}{A string or a vector of strings, name(s) of correlation types to be estimated. Must be chosen from \code{"pearson"}, \code{"kendall"}, \code{"spearman"}, \code{"sin_kendall"}, and \code{"sin_spearman"}.}
 
 \item{permutation}{Logical, indicating whether permutation tests should be done in addition to parametric tests; defaults to \code{TRUE}.}
 
@@ -84,14 +84,14 @@ dat2 <- dat0[dat0$Group=="BB", 2:10][1:15,] # 15 x 9
 # Self correlations
 viz(dat_name="exmp_self", dat1X=dat1, dat2X=dat2, dat1Y=NULL, dat2Y=NULL,
     name_dat1="AA", name_dat2="BB", 
-    cor_names=c("pearson","spearman", "kendall","nonparaspearman","nonparakendall"),
+    cor_names=c("pearson","spearman", "kendall","sin_spearman","sin_kendall"),
     permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY", verbose=TRUE,
     make_plot=TRUE, parallel=FALSE, perm_seed=1, Cai_seed=1, layout_seed=1)
 # Correlations between variables in group X = {1:4} and variables in group Y = {5:9}
 viz(dat_name="exmp_XY", dat1X=dat1[,1:(ncol(dat1)/2)], dat2X=dat2[,1:(ncol(dat1)/2)], 
     dat1Y=dat1[,(ncol(dat1)/2+1):ncol(dat1)], dat2Y=dat2[,(ncol(dat1)/2+1):ncol(dat1)], 
     name_dat1="AA", name_dat2="BB", 
-    cor_names=c("pearson","spearman", "kendall","nonparaspearman","nonparakendall"), 
+    cor_names=c("pearson","spearman", "kendall","sin_spearman","sin_kendall"), 
     permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY", verbose=TRUE, 
     make_plot=TRUE, parallel=FALSE, perm_seed=1, layout_seed=1)
     

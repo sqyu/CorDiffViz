@@ -18,7 +18,7 @@ dim(dat2) # 98 x 48
 t1 <- Sys.time()
 CorDiffViz::viz(dat_name="self_cors", dat1X=dat1, dat2X=dat2, dat1Y=NULL, dat2Y=NULL, 
                 name_dat1="AA", name_dat2="BB", 
-                cor_names=c("pearson","spearman", "kendall","nonparaspearman","nonparakendall"), 
+                cor_names=c("pearson","spearman", "kendall","sin_spearman","sin_kendall"), 
                 permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY", verbose=TRUE, 
                 make_plot=TRUE, parallel=FALSE, perm_seed=1, Cai_seed=1, layout_seed=1)
 Sys.time() - t1
@@ -28,7 +28,7 @@ t1 <- Sys.time()
 CorDiffViz::viz(dat_name="XY_cors", dat1X=dat1[,1:(ncol(dat1)/2)], dat2X=dat2[,1:(ncol(dat1)/2)], 
                 dat1Y=dat1[,(ncol(dat1)/2+1):ncol(dat1)], dat2Y=dat2[,(ncol(dat1)/2+1):ncol(dat1)], 
                 name_dat1="AA", name_dat2="BB", 
-                cor_names=c("pearson","spearman", "kendall","nonparaspearman","nonparakendall"), 
+                cor_names=c("pearson","spearman", "kendall","sin_spearman","sin_kendall"), 
                 permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY", verbose=TRUE, 
                 make_plot=TRUE, parallel=FALSE, perm_seed=1, layout_seed=1)
 Sys.time() - t1
@@ -38,7 +38,7 @@ t1 <- Sys.time()
 CorDiffViz::viz(dat_name="XY_cors_Ylong", dat1X=dat1[,1:(ncol(dat1)/3)], dat2X=dat2[,1:(ncol(dat1)/3)], 
                 dat1Y=dat1[,(ncol(dat1)/3+1):ncol(dat1)], dat2Y=dat2[,(ncol(dat1)/3+1):ncol(dat1)], 
                 name_dat1="AA", name_dat2="BB", 
-                cor_names=c("pearson","spearman", "kendall","nonparaspearman","nonparakendall"), 
+                cor_names=c("pearson","spearman", "kendall","sin_spearman","sin_kendall"), 
                 permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY", verbose=TRUE, 
                 make_plot=TRUE, parallel=FALSE, perm_seed=1, layout_seed=1)
 Sys.time() - t1
@@ -48,7 +48,7 @@ t1 <- Sys.time()
 CorDiffViz::viz(dat_name="XY_cors_Xlong", dat1X=dat1[,1:(2*ncol(dat1)/3)], dat2X=dat2[,1:(2*ncol(dat1)/3)], 
                 dat1Y=dat1[,(2*ncol(dat1)/3+1):ncol(dat1)], dat2Y=dat2[,(2*ncol(dat1)/3+1):ncol(dat1)], 
                 name_dat1="AA", name_dat2="BB", 
-                cor_names=c("pearson","spearman", "kendall","nonparaspearman","nonparakendall"), 
+                cor_names=c("pearson","spearman", "kendall","sin_spearman","sin_kendall"), 
                 permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY", verbose=TRUE, 
                 make_plot=TRUE, parallel=FALSE, perm_seed=1, layout_seed=1)
 Sys.time() - t1

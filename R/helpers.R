@@ -289,7 +289,7 @@ cor_to_p_function_generator <- function(cor_type, npn){
 
 R_to_P <- function(cor_to_p, n, sides, cor_mat, Ygiven, adj_method="BY"){
   ### entry-wise p values using parameteric distributions for rho ###
-  #if (npn && cor_type == "pearson") stop("Nonparanormal only supported for Kendall and Spearman.")
+  #if (npn && cor_type == "pearson") stop("Sin_normal only supported for Kendall and Spearman.")
   if ((!Ygiven) && ncol(cor_mat) != nrow(cor_mat)) 
     stop("cor_mat must be a square matrix.")
   return (adjust_ps(cdf_to_p_para_mat(cor_to_p(cor_mat, n), sides), adj_method, Ygiven))
@@ -397,7 +397,7 @@ rr_diff_para <- function(cor2s_to_p, sides, cors, n1, n2, Ygiven, adj_method="BY
 }
 
 rr_diff_perm <- function (cal_cor, X1, Y1, X2, Y2, b, p_perm, use_atanh=TRUE){
-  # use_atanh should be TRUE only if cal_cor is pearson or nonparanormal kendall/spearman
+  # use_atanh should be TRUE only if cal_cor is pearson or sin_kendall/sin_spearman
   #set.seed(sum(X1)+sum(Y1)+sum(X2)+sum(Y2)+b)
   X <- c(X1,X2); Y <- c(Y1,Y2)
   if (use_atanh) {

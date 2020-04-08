@@ -201,7 +201,7 @@ save_print_plot_diff <- function(mat, cor_name, mode, Xnames, Ynames,
 #' @param dat2Y Optional, a matrix data for group X for the second sample and defaults to \code{NULL}; see details. If not \code{NULL}, must have the same number of rows as \code{dat2X} and same number of columns as \code{dat1Y}, and \code{dat1Y} must not be \code{NULL}.
 #' @param name_dat1 A string, name for the first sample. Defaults to "1".
 #' @param name_dat2 A string, name for the second sample. Defaults to "2".
-#' @param cor_names A string or a vector of strings, name(s) of correlation types to be estimated. Must be chosen from \code{"pearson"}, \code{"kendall"}, \code{"spearman"}, \code{"nonparakendall"}, and \code{"nonparaspearman"}.
+#' @param cor_names A string or a vector of strings, name(s) of correlation types to be estimated. Must be chosen from \code{"pearson"}, \code{"kendall"}, \code{"spearman"}, \code{"sin_kendall"}, and \code{"sin_spearman"}.
 #' @param permutation Logical, indicating whether permutation tests should be done in addition to parametric tests; defaults to \code{TRUE}.
 #' @param alpha Numerical, the significance level in hypothesis testing; defaults to 0.05.
 #' @param sides A number \code{1}, \code{2}, \code{3} or a matrix containing \code{1}, \code{2}, \code{3}. If a matrix, must be of size \code{ncol(dat1X) x ncol(dat1X)} if \code{dat1Y} is \code{NULL}, or \code{ncol(dat1X) x ncol(dat1Y)} otherwise. \code{2} stands for two-sided tests, \code{1} for one-sided test with null hypothesis being the corresponding entries >= 0 (the corresponding correlation for sample 1 stronger than that for sample 2), and \code{3} for one-sided test with null hypothesis being the corresponding entries <= 0.
@@ -226,14 +226,14 @@ save_print_plot_diff <- function(mat, cor_name, mode, Xnames, Ynames,
 #' # Self correlations
 #' viz(dat_name="exmp_self", dat1X=dat1, dat2X=dat2, dat1Y=NULL, dat2Y=NULL,
 #'     name_dat1="AA", name_dat2="BB", 
-#'     cor_names=c("pearson","spearman", "kendall","nonparaspearman","nonparakendall"),
+#'     cor_names=c("pearson","spearman", "kendall","sin_spearman","sin_kendall"),
 #'     permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY", verbose=TRUE,
 #'     make_plot=TRUE, parallel=FALSE, perm_seed=1, Cai_seed=1, layout_seed=1)
 #' # Correlations between variables in group X = {1:4} and variables in group Y = {5:9}
 #' viz(dat_name="exmp_XY", dat1X=dat1[,1:(ncol(dat1)/2)], dat2X=dat2[,1:(ncol(dat1)/2)], 
 #'     dat1Y=dat1[,(ncol(dat1)/2+1):ncol(dat1)], dat2Y=dat2[,(ncol(dat1)/2+1):ncol(dat1)], 
 #'     name_dat1="AA", name_dat2="BB", 
-#'     cor_names=c("pearson","spearman", "kendall","nonparaspearman","nonparakendall"), 
+#'     cor_names=c("pearson","spearman", "kendall","sin_spearman","sin_kendall"), 
 #'     permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY", verbose=TRUE, 
 #'     make_plot=TRUE, parallel=FALSE, perm_seed=1, layout_seed=1)
 #'     
@@ -242,7 +242,7 @@ save_print_plot_diff <- function(mat, cor_name, mode, Xnames, Ynames,
 #' setup_js_html()
 #' @export
 viz <- function(dat_name, dat1X, dat2X, dat1Y=NULL, dat2Y=NULL, name_dat1="1", name_dat2="2",
-                cor_names=c("pearson","kendall","spearman","nonparakendall","nonparaspearman"), 
+                cor_names=c("pearson","kendall","spearman","sin_kendall","sin_spearman"), 
                 permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY",
                 parallel=FALSE, verbose=TRUE, make_plot=TRUE, perm_seed=NULL, 
                 Cai_seed=NULL, layout_seed=NULL){
@@ -282,8 +282,8 @@ viz <- function(dat_name, dat1X, dat2X, dat1Y=NULL, dat2Y=NULL, name_dat1="1", n
   if (!all(sides %in% c(1, 2, 3)))
       stop("All entries in sides must be 1, 2, or 3.")
   cor_names <- unique(cor_names)
-  if (!all(cor_names %in% c("pearson", "kendall", "spearman", "nonparakendall", "nonparaspearman")))
-    stop("All of cor_names must be pearson, kendall, spearman, nonparakendall, or nonparaspearman.\n")
+  if (!all(cor_names %in% c("pearson", "kendall", "spearman", "sin_kendall", "sin_spearman")))
+    stop("All of cor_names must be pearson, kendall, spearman, sin_kendall, or sin_spearman.\n")
   
   dir.create("dats", showWarnings = FALSE)
   dat_folder <- file.path("dats", dat_name)
@@ -305,8 +305,8 @@ viz <- function(dat_name, dat1X, dat2X, dat1Y=NULL, dat2Y=NULL, name_dat1="1", n
 
   for (cor_ind in 1:length(cor_names)){
     cor_name <- cor_names[cor_ind]
-    cor_type <- gsub("nonpara", "", cor_name)
-    npn <- grepl("nonpara", cor_name)
+    cor_type <- gsub("sin_", "", cor_name)
+    npn <- grepl("sin_", cor_name)
     cal_cor <- cal_cor_function_generator(cor_type=cor_type, npn=npn)
     if (verbose) cat(rep("*",80),"\nStarting calculations for ", cor_name,"\n", sep="")
     if (make_plot)
@@ -328,10 +328,10 @@ viz <- function(dat_name, dat1X, dat2X, dat1Y=NULL, dat2Y=NULL, name_dat1="1", n
     ########## One-sample permutation tests ##########
     if (permutation){
       one_perm_cache <- list()
-      #### Reuse results from kendall/pearson with nonpara=F for nonpara=T, and vice versa
+      #### Reuse results from kendall/pearson with npn=F for npn=T, and vice versa
       if (!is.null(one_perm_cache[[cor_type]])) {
         if (verbose)
-          cat("Reading cached results for", cor_name, "from", paste(ifelse(grepl("nonpara", cor_name), "", "nonpara"), cor_type, sep=""))
+          cat("Reading cached results for", cor_name, "from", paste(ifelse(grepl("sin_", cor_name), "", "sin_"), cor_type, sep=""))
         p_perms <- one_perm_cache[[cor_type]]$p_perms
         cor_perms <- one_perm_cache[[cor_type]]$cor_perms
       } else {
@@ -339,7 +339,7 @@ viz <- function(dat_name, dat1X, dat2X, dat1Y=NULL, dat2Y=NULL, name_dat1="1", n
                                 list(dat1Y, dat2Y), B, adj_method, parallel, verbose, perm_seed)
         cor_perms <- sapply(name_dat12, function(dat_name){
           threshold_mat(raw_cors[[dat_name]], p_perms[[dat_name]], alpha)}, simplify=FALSE, USE.NAMES=TRUE)
-        if (cor_type %in% c("kendall", "spearman") && cor_type %in% cor_names && paste("nonpara", cor_type, sep="") %in% cor_names)
+        if (cor_type %in% c("kendall", "spearman") && cor_type %in% cor_names && paste("sin_", cor_type, sep="") %in% cor_names)
           one_perm_cache[[cor_type]] <- list("p_perms"=p_perms, "cor_perms"=cor_perms)  
       }
       save_print_plot_one(raw_cors, cor_perms, p_perms, cor_name, "perm", Xnames, Ynames, 
@@ -367,15 +367,15 @@ viz <- function(dat_name, dat1X, dat2X, dat1Y=NULL, dat2Y=NULL, name_dat1="1", n
     if (permutation){
       diff_perm_cache <- list()
       if (verbose) cat(rep("*",40), "\nTesting difference using permutation tests:\n", sep="")
-      #### Reuse results from kendall/pearson with nonpara=F for nonpara=T, and vice versa
+      #### Reuse results from kendall/pearson with npn=F for npn=T, and vice versa
       if (!is.null(diff_perm_cache[[cor_type]])) {
-        if (verbose) cat("Reading cached results for", cor_name, "from", paste(ifelse(grepl("nonpara", cor_name), "", "nonpara"), cor_type, sep=""))
+        if (verbose) cat("Reading cached results for", cor_name, "from", paste(ifelse(grepl("sin_", cor_name), "", "sin_"), cor_type, sep=""))
         p_perm_diff <- diff_perm_cache[[cor_type]]$p_perm_diff
         diff_perm <- diff_perm_cache[[cor_type]]$diff_perm
       } else {
         p_perm_diff <- perm_test_diff(cal_cor, sides, dat1X, dat2X, dat1Y, dat2Y, B=B, adj_method=adj_method, parallel=parallel, verbose=verbose, perm_seed=perm_seed)
         diff_perm <- threshold_mat(raw_diff, p_perm_diff, alpha)
-        if (cor_type %in% c("kendall", "spearman") && cor_type %in% cor_names && paste("nonpara", cor_type, sep="") %in% cor_names)
+        if (cor_type %in% c("kendall", "spearman") && cor_type %in% cor_names && paste("sin_", cor_type, sep="") %in% cor_names)
           diff_perm_cache[[cor_type]] <- list("p_perm_diff"=p_perm_diff, "diff_perm"=diff_perm)  
       }
       save_print_plot_diff(diff_perm, cor_name, "perm", Xnames, Ynames, verbose, make_plot, dat_folder, plot_folder, layout_seed)

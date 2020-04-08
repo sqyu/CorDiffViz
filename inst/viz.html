@@ -10,6 +10,7 @@
 	<select id="select-folder" onchange="change_data(false)" style="position:relative; text-align:left;">
 		<option value="" selected disabled>Please select your data folder here</option>
 	</select>
+	<br/><br/>
 </div>
 <div id="pleasewait" style="position:absolute; text-align:left; vertical-align:top; font-size:50px">Please wait...</div>
 </body>
@@ -79,7 +80,6 @@ var w = 650, // ideal width for correlation plot; may be changed for the corr pl
 	if (0 <= window.name && window.name <= folder_names.length)
 		folderDropdown.selectedIndex = window.name;
 	change_data(true);
-
 </script>
 
 
@@ -128,8 +128,8 @@ var w = 650, // ideal width for correlation plot; may be changed for the corr pl
 			<input type='radio' name="cortype" value="kendall" id="cortypekendall"><label for="cortypekendall" class="radio_text" style="display:none"> Kendall's Tau</label></input>
 			<input type='radio' name="cortype" value="spearman" id="cortypespearman" checked><label for="cortypespearman" class="radio_text" style="display:none"> Spearman's Rho</label></input>
 			<br/>
-			<input type='radio' name="cortype" value="nonparakendall" id="cortypenonparakendall"><label for="cortypenonparakendall" class="radio_text" style="display:none"> Kendall's Tau (Nonparanormal)</label></input>
-			<input type='radio' name="cortype" value="nonparaspearman" id="cortypenonparaspearman"><label for="cortypenonparaspearman" class="radio_text" style="display:none"> Spearman's Rho (Nonparanormal)</label></input>
+			<input type='radio' name="cortype" value="sin_kendall" id="cortypesin_kendall"><label for="cortypesin_kendall" class="radio_text" style="display:none"> Kendall's Tau (sin-transformed)</label></input>
+			<input type='radio' name="cortype" value="sin_spearman" id="cortypesin_spearman"><label for="cortypesin_spearman" class="radio_text" style="display:none"> Spearman's Rho (sin-transformed)</label></input>
 		</form>
 		<form id="testtype" style="position:absolute; text-align:left;">
 			<input type='radio' name="testtype" value="raw" id="testtyperaw"><label for="testtyperaw" id="testtyperawtext" class="radio_text" style="display:none"> Raw</label></input>
