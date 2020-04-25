@@ -304,13 +304,11 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 	})
 	.style("font-size", labelsize+"px");
 
-	var corXscale = d3.scale.ordinal().rangeRoundBands([0,w - w_smaller]),
-		corYscale = d3.scale.ordinal().rangeRoundBands([0,h - h_smaller]),
-		corColScale = d3.scale.linear().domain([-1,0,1]).range(['crimson','white','slateblue']);
-	var corRscale = d3.scale.sqrt().domain([0,1]);
-		corXscale.domain(d3.range(nvar_Y));
-		corYscale.domain(d3.range(nvar_X));
-		corRscale.range([0,(0.5+0.2*two)*corXscale.rangeBand()]); ////// corXscale.rangeBand() == corYscale.rangeBand() anyways
+	var corXscale = d3.scale.ordinal().rangeRoundBands([0,w - w_smaller]).domain(d3.range(nvar_Y)),
+		corYscale = d3.scale.ordinal().rangeRoundBands([0,h - h_smaller]).domain(d3.range(nvar_X)),
+		corColScale = d3.scale.linear().domain([-1,0,1]).range(['crimson','white','slateblue']),
+		corRscale = d3.scale.sqrt().range([0, 0.5*corXscale.rangeBand()]).domain([0,1]); ////// corXscale.rangeBand() == corYscale.rangeBand() anyways
+
 
 	var cells = corrplot.append('g')
 		.attr('id', 'cells')

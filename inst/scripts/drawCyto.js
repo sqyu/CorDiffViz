@@ -48,16 +48,19 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
         }]
 	}
   
-	var graph_name = two ? ("graph_diff_"+cortype+"_"+testtype) : ("graph_"+cortype+"_"+testtype+"_"+whichrawdat),
+	var num_nodes = nvar_X + (is_X_Y ? nvar_Y : 0),
+    graph_name = two ? ("graph_diff_"+cortype+"_"+testtype) : ("graph_"+cortype+"_"+testtype+"_"+whichrawdat),
 		edge_name = graph_name + "_edges",
 		max_degree = parseInt(window[graph_name + "_maxDegree"], 10),
-    node_size_mult_min = 5, node_size_mult_max = 10,
-    node_size_slope = (Math.log(node_size_mult_max) - Math.log(node_size_mult_min)) / Math.log(max_degree + 1),
-    node_size_func = function(node){return node.length * node_size_mult_min * Math.exp(node_size_slope * Math.log(node.degree(false) + 1))};
+    node_size_mult_min = 500 / num_nodes, node_size_mult_max = 2 * node_size_mult_min,
+    //node_size_slope = (Math.log(node_size_mult_max) - Math.log(node_size_mult_min)) / Math.log(max_degree + 1),
+    //node_size_func = function(node){return node.length * node_size_mult_min * Math.exp(node_size_slope * Math.log(node.degree(false) + 1))};
+    node_size_slope = (node_size_mult_max - node_size_mult_min) / Math.sqrt(max_degree),
+    node_size_func = function(node){return node_size_mult_min + Math.sqrt(node.degree(false)) * node_size_slope};
 
 	console.log(graph_name);
-	console.log(window[edge_name]);
-	console.log(graph_nodes);
+	//console.log(window[edge_name]);
+	//console.log(graph_nodes);
 
 	/*if (typeof window[edge_name] === 'undefined'){
 		corrplot.append('g').append('text')
@@ -85,7 +88,8 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
         {
             selector: 'node.highlight',
             style: {
-                label: 'data(id)'
+                label: 'data(id)',
+                'font-size': 30 
             }
         },
         {
