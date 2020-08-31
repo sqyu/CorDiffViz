@@ -23,13 +23,13 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
 		{
             selector: '.X.highlight',
             style: {
-                'background-color': 'red',
+                'background-color': 'orange',
             }
         },
         {
             selector: '.Y.highlight',
             style: {
-                'background-color': 'blue',
+                'background-color': 'green',
             }
         }
 		]
@@ -37,13 +37,13 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
 		node_color_style = [{
 			selector: 'node',
 			style: {
-				'background-color': 'gray'
+				'background-color': 'chocolate'
 			}
 		},
 		{
             selector: 'node.highlight',
             style: {
-                'background-color': 'red',
+                'background-color': 'chocolate',
             }
         }]
 	}

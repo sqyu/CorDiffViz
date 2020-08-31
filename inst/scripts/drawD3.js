@@ -1,19 +1,19 @@
 
 // Attention: X is the variable defined by the rows and Y is the variable defined by the columns, opposite to x and y in Javascript.
 var svg = d3.select('svg')
-	.attr({
+	.attrs({
 		'width': full_width + margin.left + margin.right,
 		'height': h + margin.top + margin.bottom
 	})
 	.append('g')
-	.attr({
+	.attrs({
 		'transform': 'translate(' + margin.left + ',' + margin.top + ')',
 		'width': full_width,
 		'height': h
 	});
 
 var corrplot = svg.append('g')
-	.attr({
+	.attrs({
 		'id': 'corrplot',
 		'transform': 'translate(' + w_smaller / 2 + ',' + h_smaller / 2 + ')',
 		"width": w - w_smaller,
@@ -21,19 +21,19 @@ var corrplot = svg.append('g')
 	});
 
 var scatprompt = svg.append('g')
-	.attr({
+	.attrs({
 		'id': 'scatprompt',
 		'transform': 'translate(' + (w + pad) + ',' + h/2 + ')'
 	});
 
 var scatterplot1 = svg.append('g')
-	.attr({
+	.attrs({
 		'id': 'scatterplot1',
 		'transform': 'translate(' + (w + pad) + ',0)'
 	});
 
 var scatterplot2 = svg.append('g')
-	.attr({
+	.attrs({
 		'id': 'scatterplot2',
 		'transform': 'translate(' + (w + pad) + ',' + (h+h_btw_scat)/2 + ')'
 	});
@@ -58,47 +58,39 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 	var Y_extent1 = d3.extent((is_X_Y ? dat1_Y : dat1).dat[col]),
 		X_extent1 = d3.extent((is_X_Y ? dat1_X : dat1).dat[row]);
 
-	var xScale1 = d3.scale.linear()
+	var xScale1 = d3.scaleLinear()
 		.domain(flipped ? X_extent1 : Y_extent1) // Recall: x is the col coordinate, but X is the data indexed by rows
 		.range([0, w_scat]);
-	var yScale1 = d3.scale.linear()
+	var yScale1 = d3.scaleLinear()
 		.domain(flipped ? Y_extent1 : X_extent1)
 		.range([two ? (h-h_btw_scat)/2 : h, 0]);
 
-	var xAxis1 = d3.svg.axis()
-		.scale(xScale1)
-		.orient('bottom')
+	var xAxis1 = d3.axisBottom(xScale1)
 		.ticks(num_ticks);
 
-	var yAxis1 = d3.svg.axis()
-		.scale(yScale1)
-		.orient('left')
+	var yAxis1 = d3.axisLeft(yScale1)
 		.ticks(num_ticks);
 
 	if (two){
 		var Y_extent2 = d3.extent((is_X_Y ? dat2_Y : dat2).dat[col]),
 			X_extent2 = d3.extent((is_X_Y ? dat2_X : dat2).dat[row]);
-		var xScale2 = d3.scale.linear()
+		var xScale2 = d3.scaleLinear()
 			.domain(flipped ? X_extent2 : Y_extent2)
 			.range([0, w_scat]);
-		var yScale2 = d3.scale.linear()
+		var yScale2 = d3.scaleLinear()
 			.domain(flipped ? Y_extent2 : X_extent2)
 			.range([(h-h_btw_scat)/2, 0]);
-		var xAxis2 = d3.svg.axis()
-			.scale(xScale2)
-			.orient('bottom')
+		var xAxis2 = d3.axisBottom(xScale2)
 			.ticks(num_ticks);
 
-		var yAxis2 = d3.svg.axis()
-			.scale(yScale2)
-			.orient('left').
-			ticks(num_ticks);
+		var yAxis2 = d3.axisLeft(yScale2)
+			.ticks(num_ticks);
 	}
 
 	scatterplot1.append('g')
 	.append('text')
 	.text('Scatter plot, '+window[whichrawdat+"_name"]+', raw '+ (((!is_X_Y) && col === row) ? 1 : Math.round(window["cor_"+cortype+"_raw_"+whichrawdat+"_mat"][get_index(col, row, nvar_X, is_X_Y)].value*1000)/1000))
-	.attr({
+	.attrs({
 		'class': 'scatplottitle',
 		'x': w_scat/2,
 		'y': -labelsize,
@@ -111,7 +103,7 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 		scatterplot2.append('g')
 		.append('text')
 		.text('Scatter plot, '+window["second_name"]+', raw ' + (((!is_X_Y) && col === row) ? 1 : Math.round(window["cor_"+cortype+"_raw_second_mat"][get_index(col, row, nvar_X, is_X_Y)].value*1000)/1000))
-		.attr({
+		.attrs({
 			'class': 'scatplottitle',
 			'x': w_scat/2,
 			'y': -labelsize,
@@ -136,7 +128,7 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 	.selectAll('empty')
 	.data(d3.range(nind1))
 	.enter().append('circle')
-	.attr({
+	.attrs({
 		'class': 'point',
 		'cx': cx_func1,
 		'cy': cy_func1,
@@ -161,7 +153,7 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 
 	scatterplot1.append('g').append('text')
 	.text(flipped ? X_name : Y_name)
-	.attr({
+	.attrs({
 		'class': 'scatterlabel',
 		'x': w_scat/2,
 		'y': h + 1.5*labelsize,
@@ -173,7 +165,7 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 
 	scatterplot1.append('g').append('text')
 	.text(flipped ? Y_name : X_name)
-	.attr({
+	.attrs({
 		'class': 'scatterlabel',
 		'transform': 'translate(' + (w_scat+labelsize) + ',' + (h/2) + ')rotate(270)',
 		'dominant-baseline': 'middle',
@@ -196,7 +188,7 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 		.selectAll('empty')
 		.data(d3.range(nind2))
 		.enter().append('circle')
-		.attr({
+		.attrs({
 			'class': 'point',
 			'cx': cx_func2,
 			'cy': cy_func2,
@@ -230,7 +222,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 	console.log("Showing "+datfile);
 
 	corrplot.append('g').append('rect')
-		.attr({
+		.attrs({
 			'class': 'corrbox',
 			'x': 0, 'y': 0,
 			'width': w - w_smaller,
@@ -268,7 +260,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 	/*if (typeof window[datfile] === 'undefined'){
 		 corrplot.append('g').append('text')
 			.text(((!two || cortype !== "pearson") && testtype === "cai") ? "Cai tests only supported for two-sample pearson correlations." : "Data not available.")
-			.attr({
+			.attrs({
 				'class': 'scatterlabel',
 				'x': (w-w_smaller)/2,
 				'y': (h-h_smaller)/2,
@@ -295,7 +287,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 
 	corrplot.append('g').append('text')
 	.text((two ? 'Differential correlation matrix' : 'Correlation matrix') + ": " + (Math.round(window["prop_"+datfile]*100)/100) + "% nonzero")
-	.attr({
+	.attrs({
 		'class': 'corrplottitle',
 		'x': w/2 - w_smaller/2,
 		'y': -margin.top/2 - h_smaller/2,
@@ -304,10 +296,10 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 	})
 	.style("font-size", labelsize+"px");
 
-	var corXscale = d3.scale.ordinal().rangeRoundBands([0,w - w_smaller]).domain(d3.range(nvar_Y)),
-		corYscale = d3.scale.ordinal().rangeRoundBands([0,h - h_smaller]).domain(d3.range(nvar_X)),
-		corColScale = d3.scale.linear().domain([-1,0,1]).range(['crimson','white','slateblue']),
-		corRscale = d3.scale.sqrt().range([0, 0.5*corXscale.rangeBand()]).domain([0,1]); ////// corXscale.rangeBand() == corYscale.rangeBand() anyways
+	var corXscale = d3.scaleBand().rangeRound([0, w - w_smaller]).domain(d3.range(nvar_Y)),
+		corYscale = d3.scaleBand().rangeRound([0, h - h_smaller]).domain(d3.range(nvar_X)),
+		corColScale = d3.scaleLinear().domain([-1,0,1]).range(['crimson','white','slateblue']),
+		corRscale = d3.scaleSqrt().range([0, 0.5*corXscale.bandwidth()]).domain([0,1]); ////// corXscale.bandwidth() == corYscale.bandwidth() anyways
 
 
 	var cells = corrplot.append('g')
@@ -315,7 +307,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 		.selectAll('empty')
 		.data(corrmat)
 		.enter().append('g')
-		.attr({
+		.attrs({
 			'class': 'cell'
 		})
 		.style('pointer-events', 'all');
@@ -323,19 +315,20 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 	console.log(corrmat)
 
 	var rects = cells.append('rect')
-		.attr({
+		.attrs({
 			'x': function(d) { return corXscale(d.col); },
 			'y': function(d) { return corYscale(d.row); },
-			'width': corXscale.rangeBand(),
-			'height': corYscale.rangeBand(),
+			'width': corXscale.bandwidth(),
+			'height': corYscale.bandwidth(),
 			'fill': 'none',
-			'stroke': 'none',
+			'stroke': '#ccc',
+			'stroke-dasharray': '1 4',
 			'stroke-width': '1'
 		});
 
 	var circles = cells.append('circle')
-		.attr('cx', function(d) {return corXscale(d.col) + 0.5*corXscale.rangeBand(); })
-		.attr('cy', function(d) {return corYscale(d.row) + 0.5*corYscale.rangeBand(); })
+		.attr('cx', function(d) {return corXscale(d.col) + 0.5*corXscale.bandwidth(); })
+		.attr('cy', function(d) {return corYscale(d.row) + 0.5*corYscale.bandwidth(); })
 		.attr('r', function(d) {return corRscale(Math.abs(d.value)); })
 		.style('fill', function(d) { return corColScale(d.value); });
 
@@ -349,36 +342,36 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 		var yPos = parseFloat(d3.select(this).select('rect').attr('y'));
 
 		corrplot.append('text')
-		.attr({
+		.attrs({
 			'class': 'corrlabel',
-			'x': corXscale(d.col) + 0.5*corXscale.rangeBand(),
+			'x': corXscale(d.col) + 0.5*corXscale.bandwidth(),
 			'y': h - h_smaller + labelsize
 		})
 		.text((is_X_Y ? vars_Y : vars)[d.col])
-		.attr({
+		.attrs({
 			'dominant-baseline': 'middle',
 			'text-anchor': 'middle'
 		})
 		.style("font-size", labelsize+"px");
 
 		corrplot.append('text')
-		.attr({
+		.attrs({
 			'class': 'corrlabel'
 			// 'x': -margin.left*0.1,
 			// 'y': corXscale(d.row)
 		})
 		.text((is_X_Y ? vars_X : vars)[d.row])
-		.attr({
+		.attrs({
 			'dominant-baseline': 'middle',
 			'text-anchor': 'middle',
-			'transform': 'translate(' + (-labelsize) + ',' + (corYscale(d.row) + 0.5*corYscale.rangeBand()) + ')rotate(270)'
+			'transform': 'translate(' + (-labelsize) + ',' + (corYscale(d.row) + 0.5*corYscale.bandwidth()) + ')rotate(270)'
 		})
 		.style("font-size", labelsize+"px");
 
 		corrplot.append('rect')
-		.attr({
+		.attrs({
 			'class': 'tooltip',
-			'x': xPos - 20 + corXscale.rangeBand() / 2,
+			'x': xPos - 20 + corXscale.bandwidth() / 2,
 			'y': yPos - 30,
 			'width': 40,
 			'height': 20,
@@ -387,9 +380,9 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 		});
 
 		corrplot.append('text')
-		.attr({
+		.attrs({
 			'class': 'tooltip',
-			'x': xPos + corXscale.rangeBand() / 2,
+			'x': xPos + corXscale.bandwidth() / 2,
 			'y': yPos - 15,
 			'text-anchor': 'middle',
 			'font-family': 'sans-serif',
@@ -404,7 +397,10 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 		d3.selectAll('.corrlabel').remove();
 		d3.select(this)
 			.select('rect')
-			.attr('stroke', 'none');
+			.attr('stroke', '#ccc')
+			.attr('stroke-dasharray', '1 4')
+			.attr('stroke-width', '1');
+
 		//Hide the tooltip
 		d3.selectAll('.tooltip').remove();
 	})
