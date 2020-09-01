@@ -150,7 +150,7 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
   			cor_object.push([neighbor_node.data('id'), node.edgesWith(neighbor_node).data('value')]);
   		cor_object.sort(function(a, b) {return Math.abs(b[1]) - Math.abs(a[1]);});
   		for (let pair of cor_object)
-  			cor_list = cor_list + pair[0] + ": " + (Math.round(pair[1]*1000)/1000) + "<br/>";
+  			cor_list = cor_list + pair[0] + ": " + rounding(pair[1], 3) + "<br/>";
   		document.getElementById("cor_list").style["font-size"] = cyto_cor_text_size + "px";
   		document.getElementById("cor_list").innerHTML = cor_list;
 	}
@@ -161,7 +161,7 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
   		cy.elements().difference(edge.connectedNodes()).not(edge).addClass('transparent');
   		edge.addClass('highlight').connectedNodes().addClass('highlight');
   		console.log(edge);
-  		let cor_list = "Node 1: " + edge.data("source") + "<br/><br/>Node 2: " + edge.data("target") + "<br><br/>" + (two ? "Differential c" : "C") + "orrelation: " + (Math.round(edge.data('value')*1000)/1000);
+  		let cor_list = "Node 1: " + edge.data("source") + "<br/><br/>Node 2: " + edge.data("target") + "<br><br/>" + (two ? "Differential c" : "C") + "orrelation: " + rounding(edge.data('value'), 3);
   		document.getElementById("cor_list").style["font-size"] = cyto_cor_text_size + "px";
   		document.getElementById("cor_list").innerHTML = cor_list;
 	}

@@ -1,3 +1,8 @@
+function rounding(num, digit) {
+	var tens = Math.pow(10, digit)
+	return Math.round((num + Number.EPSILON) * tens) / tens;
+}
+
 if (folder_name !== "NotFound" && folder_name !== "" && (typeof first_name === 'undefined'))
 	alert("The folder name you selected is invalid. Please check that the folder you selected ('dats/" + folder_name + "') exists, and that it contains dat.json, cors.json, diffs.json and graphs.json. If you have manually changed your folder name after using our R code to generate it, please open the html file in an editor, and manually edit the folder list by searching for 'folder_names'.")
 

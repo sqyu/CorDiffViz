@@ -44,6 +44,16 @@ if (nvar_Y > nvar_X) { // more variables to plot on the x axis, make h smaller a
 	h_smaller = 0;
 }
 
+
+function cut_string(s, len) {
+	if (s.length > len)
+		return s.substring(0, len) + "..."
+	return s
+}
+
+first_name = cut_string(first_name, 6);
+second_name = cut_string(second_name, 6);
+
 document.getElementById("whichdatalabelFIRST").innerHTML = first_name
 document.getElementById("whichdatalabelSECOND").innerHTML = second_name
 

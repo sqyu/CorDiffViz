@@ -52,18 +52,20 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 	d3.selectAll('.points').remove();
 	d3.selectAll('.axis').remove();
 	d3.selectAll('.scatterlabel').remove();
-	d3.selectAll('.scatplottitle').remove(); 
+	d3.selectAll('.scatplottitle1').remove();
+	d3.selectAll('.scatplottitle2').remove(); 
 	scatprompt.selectAll('g').remove();
 
 	var Y_extent1 = d3.extent((is_X_Y ? dat1_Y : dat1).dat[col]),
 		X_extent1 = d3.extent((is_X_Y ? dat1_X : dat1).dat[row]);
+	var scatterplot_height = two ? (h-h_btw_scat)/2 : h;
 
 	var xScale1 = d3.scaleLinear()
 		.domain(flipped ? X_extent1 : Y_extent1) // Recall: x is the col coordinate, but X is the data indexed by rows
 		.range([0, w_scat]);
 	var yScale1 = d3.scaleLinear()
 		.domain(flipped ? Y_extent1 : X_extent1)
-		.range([two ? (h-h_btw_scat)/2 : h, 0]);
+		.range([scatterplot_height, 0]);
 
 	var xAxis1 = d3.axisBottom(xScale1)
 		.ticks(num_ticks);
@@ -79,7 +81,7 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 			.range([0, w_scat]);
 		var yScale2 = d3.scaleLinear()
 			.domain(flipped ? Y_extent2 : X_extent2)
-			.range([(h-h_btw_scat)/2, 0]);
+			.range([scatterplot_height, 0]);
 		var xAxis2 = d3.axisBottom(xScale2)
 			.ticks(num_ticks);
 
@@ -87,24 +89,23 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 			.ticks(num_ticks);
 	}
 
-	scatterplot1.append('g')
-	.append('text')
-	.text('Scatter plot, '+window[whichrawdat+"_name"]+', raw '+ (((!is_X_Y) && col === row) ? 1 : Math.round(window["cor_"+cortype+"_raw_"+whichrawdat+"_mat"][get_index(col, row, nvar_X, is_X_Y)].value*1000)/1000))
-	.attrs({
-		'class': 'scatplottitle',
-		'x': w_scat/2,
-		'y': -labelsize,
-		'dominant-baseline': 'middle',
-		'text-anchor': 'middle'
-	})
-	.style("font-size", labelsize+"px");
+	var plot1_name = window[whichrawdat+"_name"],
+		raw_cor1 = ((!is_X_Y) && col === row) ? 1 : rounding(window["cor_"+cortype+"_raw_"+whichrawdat+"_mat"][get_index(col, row, nvar_X, is_X_Y)].value, 3);
 
-	if (two){
-		scatterplot2.append('g')
+	var plot_scatter_title = function(whichdat, title = "") { 
+	// Plot 1 if whichdat is true, plot 2 otherwise
+		if (title === "") {
+			title = 'Scatter plot, ' + (whichdat ? plot1_name : plot2_name) + ', raw ' + (whichdat ? raw_cor1 : raw_cor2);
+			title_class = whichdat ? 'scatplottitle1' : 'scatplottitle2';
+		} else {
+			title_class = "scatplottitle_tmp";
+		}
+		scplt_obj = whichdat ? scatterplot1 : scatterplot2;
+		scplt_obj.append('g')
 		.append('text')
-		.text('Scatter plot, '+window["second_name"]+', raw ' + (((!is_X_Y) && col === row) ? 1 : Math.round(window["cor_"+cortype+"_raw_second_mat"][get_index(col, row, nvar_X, is_X_Y)].value*1000)/1000))
+		.text(title)
 		.attrs({
-			'class': 'scatplottitle',
+			'class': title_class,
 			'x': w_scat/2,
 			'y': -labelsize,
 			'dominant-baseline': 'middle',
@@ -113,14 +114,69 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 		.style("font-size", labelsize+"px");
 	}
 
+	plot_scatter_title(true);
+
+	if (two){
+		var plot2_name = second_name,
+			raw_cor2 = ((!is_X_Y) && col === row) ? 1 : rounding(window["cor_"+cortype+"_raw_second_mat"][get_index(col, row, nvar_X, is_X_Y)].value, 3);
+
+		plot_scatter_title(false);
+	}
+
 	var X_name = (is_X_Y ? vars_X : vars)[row];
 		Y_name = (is_X_Y ? vars_Y : vars)[col];
 	if (flipped) {
-		var cx_func1 = function(d) {return xScale1((is_X_Y ? dat1_X : dat1).dat[row][d]);},
-			cy_func1 = function(d) {return yScale1((is_X_Y ? dat1_Y : dat1).dat[col][d]);};
+		var cx_dat1 = function(d) {return (is_X_Y ? dat1_X : dat1).dat[row][d];}
+		var cy_dat1 = function(d) {return (is_X_Y ? dat1_Y : dat1).dat[col][d];};
 	} else {
-		var cx_func1 = function(d) {return xScale1((is_X_Y ? dat1_Y : dat1).dat[col][d]);},
-			cy_func1 = function(d) {return yScale1((is_X_Y ? dat1_X : dat1).dat[row][d]);};
+		var cx_dat1 = function(d) {return (is_X_Y ? dat1_Y : dat1).dat[col][d];}
+		var cy_dat1 = function(d) {return (is_X_Y ? dat1_X : dat1).dat[row][d];};
+	}
+	var cx_func1 = function(d) {return xScale1(cx_dat1(d));},
+		cy_func1 = function(d) {return yScale1(cy_dat1(d));};
+
+	function point_mouseover(d, whichdat) { // Plot 1 if whichdat, else plot 2
+		if (whichdat) {	
+			var scplt_obj = scatterplot1,
+				cx_func = cx_func1;
+				cy_func = cy_func1;
+		} else {
+			var scplt_obj = scatterplot2,
+				cx_func = cx_func2;
+				cy_func = cy_func2;
+		}
+		scplt_obj.append('g')
+		.append('line')
+		.attrs({
+			"id": 'line_to_axes',
+			"stroke-dasharray": "1 4",
+			"x1": 0,
+			"y1": cy_func(d),
+			"x2": cx_func(d),
+			"y2": cy_func(d),
+			"stroke-width": 2,
+			"stroke": "black"
+		});
+		scplt_obj.append('g')
+		.append('line')
+		.attrs({
+			"id": 'line_to_axes',
+			"stroke-dasharray": "1 4",
+			"x1": cx_func(d),
+			"y1": scatterplot_height,
+			"x2": cx_func(d),
+			"y2": cy_func(d),
+			"stroke-width": 2,
+			"stroke": "black"
+		});
+		if (whichdat) {
+			d3.selectAll('.scatplottitle1').remove();
+			// If is_X_Y, dat1_X and dat1_Y have the same indices so does not matter
+			plot_scatter_title(true, "ID " + cut_string((is_X_Y ? dat1_X : dat1).ind[d], 6) + ", " + plot1_name + ", " + "(" + rounding(cx_dat1(d), 3) + ", " + rounding(cy_dat1(d), 3) + ")");
+		} else {
+			d3.selectAll('.scatplottitle2').remove();
+			plot_scatter_title(false, "ID " + cut_string((is_X_Y ? dat2_X : dat2).ind[d], 6) + ", " + plot2_name + ", " + "(" + rounding(cx_dat2(d), 3) + ", " + rounding(cy_dat2(d), 3) + ")");
+		}
 	}
 
 	scatterplot1.append('g')
@@ -128,6 +184,7 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 	.selectAll('empty')
 	.data(d3.range(nind1))
 	.enter().append('circle')
+	.attr('data-name', function (d) {'scatter_point' + d;})
 	.attrs({
 		'class': 'point',
 		'cx': cx_func1,
@@ -135,9 +192,16 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 		'r': 5,
 		'stroke': 'none',
 		'fill': 'black'
+	})
+	.on("mouseover", function(d) {point_mouseover(d, true);}
+	)
+	.on("mouseout", function(d) {
+		d3.selectAll('#line_to_axes').remove();
+		d3.selectAll('.scatplottitle_tmp').remove();
+		plot_scatter_title(true);
 	});
 
-	console.log("Showing scatter plot of "+window[whichrawdat+"_name"])
+	console.log("Showing scatter plot of " + plot1_name)
 
 	scatterplot1.append('g')
 	.attr('class', 'x axis')
@@ -176,12 +240,15 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 
 	if (two){
 		if (flipped) {
-			var cx_func2 = function(d) {return xScale2((is_X_Y ? dat2_X : dat2).dat[row][d]);},
-				cy_func2 = function(d) {return yScale2((is_X_Y ? dat2_Y : dat2).dat[col][d]);};
+			var cx_dat2 = function(d) {return (is_X_Y ? dat2_X : dat2).dat[row][d];}
+			var cy_dat2 = function(d) {return (is_X_Y ? dat2_Y : dat2).dat[col][d];};
 		} else {
-			var cx_func2 = function(d) {return xScale2((is_X_Y ? dat2_Y : dat2).dat[col][d]);},
-				cy_func2 = function(d) {return yScale2((is_X_Y ? dat2_X : dat2).dat[row][d]);};
+			var cx_dat2 = function(d) {return (is_X_Y ? dat2_Y : dat2).dat[col][d];}
+			var cy_dat2 = function(d) {return (is_X_Y ? dat2_X : dat2).dat[row][d];};
 		}
+		var cx_func2 = function(d) {return xScale2(cx_dat2(d));},
+			cy_func2 = function(d) {return yScale2(cy_dat2(d));};
+
 
 		scatterplot2.append('g')
 		.attr('class', 'points')
@@ -195,9 +262,16 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 			'r': 5,
 			'stroke': 'none',
 			'fill': 'black'
+		})
+		.on("mouseover", function(d) {point_mouseover(d, false);}
+		)
+		.on("mouseout", function(d) {
+			d3.selectAll('#line_to_axes').remove();
+			d3.selectAll('.scatplottitle_tmp').remove();
+			plot_scatter_title(false);
 		});
 		
-		console.log("Showing scatter plot of "+second_name)
+		console.log("Showing scatter plot of " + plot2_name)
 		scatterplot2.append('g')
 		.attr('class', 'x axis')
 		.attr('transform', 'translate(' + 0 + ',' + (h-h_btw_scat)/2  + ')')
@@ -286,7 +360,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 	.style("font-size", labelsize+"px");
 
 	corrplot.append('g').append('text')
-	.text((two ? 'Differential correlation matrix' : 'Correlation matrix') + ": " + (Math.round(window["prop_"+datfile]*100)/100) + "% nonzero")
+	.text((two ? 'Differential correlation matrix' : 'Correlation matrix') + ": " + rounding(window["prop_"+datfile], 2) + "% nonzero")
 	.attrs({
 		'class': 'corrplottitle',
 		'x': w/2 - w_smaller/2,
@@ -312,7 +386,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 		})
 		.style('pointer-events', 'all');
 
-	console.log(corrmat)
+	//console.log(corrmat)
 
 	var rects = cells.append('rect')
 		.attrs({
@@ -340,7 +414,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 
 		corrplot.append('text')
 		.attrs({
-			'id': "activate_cell",
+			'id': "activated_cell",
 			'class': 'corrlabel',
 			'x': corXscale(col) + 0.5*corXscale.bandwidth(),
 			'y': h - h_smaller + labelsize
@@ -354,7 +428,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 
 		corrplot.append('text')
 		.attrs({
-			'id': "activate_cell",
+			'id': "activated_cell",
 			'class': 'corrlabel'
 			// 'x': -margin.left*0.1,
 			// 'y': corXscale(row)
@@ -369,7 +443,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 
 		corrplot.append('rect')
 		.attrs({
-			'id': "activate_cell",
+			'id': "activated_cell",
 			'class': 'tooltip',
 			'x': xPos - 20 + corXscale.bandwidth() / 2,
 			'y': yPos - 30,
@@ -381,7 +455,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 
 		corrplot.append('text')
 		.attrs({
-			'id': "activate_cell",
+			'id': "activated_cell",
 			'class': 'tooltip',
 			'x': xPos + corXscale.bandwidth() / 2,
 			'y': yPos - 15,
@@ -392,12 +466,11 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 			'fill': 'black'
 		})
 		.text(d3.format('.2f')(value));
-		console.log(corrplot);
 	}
 
 	corrplot.selectAll('g.cell')
 	.on('click mouseover', function(d) {
-		d3.selectAll('#activate_cell').remove();
+		d3.selectAll('#activated_cell').remove();
 
 		var xPos = parseFloat(d3.select(this).select('rect').attr('x'));
 		var yPos = parseFloat(d3.select(this).select('rect').attr('y'));
@@ -426,7 +499,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 			drawScatter(d.col, d.row, whichrawdat, false);
 	}) // function for mouseover
 	.on('mouseout', function(d) {
-		d3.selectAll('#activate_cell').remove();
+		d3.selectAll('#activated_cell').remove();
 		//d3.selectAll('.corrlabel').remove();
 		d3.select(this)
 			.select('rect')
