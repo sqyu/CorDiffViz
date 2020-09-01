@@ -215,7 +215,7 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 
 
 function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
-
+	click_activated = false;
 	corrplot.selectAll('g').remove();
 	scatterplot1.selectAll('g').remove();
 	scatterplot2.selectAll('g').remove();
@@ -332,22 +332,20 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 		.attr('r', function(d) {return corRscale(Math.abs(d.value)); })
 		.style('fill', function(d) { return corColScale(d.value); });
 
-	corrplot.selectAll('g.cell')
-	.on('mouseover', function(d) {
-		d3.select(this)
+	function activate_cell(this_obj, xPos, yPos, col, row, value) {
+		d3.select(this_obj)
 		.select('rect')
-		.attr('stroke', 'black');
-
-		var xPos = parseFloat(d3.select(this).select('rect').attr('x'));
-		var yPos = parseFloat(d3.select(this).select('rect').attr('y'));
+		.attr('stroke', 'black')
+		.attr('stroke-dasharray', 'none');
 
 		corrplot.append('text')
 		.attrs({
+			'id': "activate_cell",
 			'class': 'corrlabel',
-			'x': corXscale(d.col) + 0.5*corXscale.bandwidth(),
+			'x': corXscale(col) + 0.5*corXscale.bandwidth(),
 			'y': h - h_smaller + labelsize
 		})
-		.text((is_X_Y ? vars_Y : vars)[d.col])
+		.text((is_X_Y ? vars_Y : vars)[col])
 		.attrs({
 			'dominant-baseline': 'middle',
 			'text-anchor': 'middle'
@@ -356,20 +354,22 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 
 		corrplot.append('text')
 		.attrs({
+			'id': "activate_cell",
 			'class': 'corrlabel'
 			// 'x': -margin.left*0.1,
-			// 'y': corXscale(d.row)
+			// 'y': corXscale(row)
 		})
-		.text((is_X_Y ? vars_X : vars)[d.row])
+		.text((is_X_Y ? vars_X : vars)[row])
 		.attrs({
 			'dominant-baseline': 'middle',
 			'text-anchor': 'middle',
-			'transform': 'translate(' + (-labelsize) + ',' + (corYscale(d.row) + 0.5*corYscale.bandwidth()) + ')rotate(270)'
+			'transform': 'translate(' + (-labelsize) + ',' + (corYscale(row) + 0.5*corYscale.bandwidth()) + ')rotate(270)'
 		})
 		.style("font-size", labelsize+"px");
 
 		corrplot.append('rect')
 		.attrs({
+			'id': "activate_cell",
 			'class': 'tooltip',
 			'x': xPos - 20 + corXscale.bandwidth() / 2,
 			'y': yPos - 30,
@@ -381,6 +381,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 
 		corrplot.append('text')
 		.attrs({
+			'id': "activate_cell",
 			'class': 'tooltip',
 			'x': xPos + corXscale.bandwidth() / 2,
 			'y': yPos - 15,
@@ -390,23 +391,57 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 			'font-weight': 'bold',
 			'fill': 'black'
 		})
-		.text(d3.format('.2f')(d.value));
+		.text(d3.format('.2f')(value));
+		console.log(corrplot);
+	}
+
+	corrplot.selectAll('g.cell')
+	.on('click mouseover', function(d) {
+		d3.selectAll('#activate_cell').remove();
+
+		var xPos = parseFloat(d3.select(this).select('rect').attr('x'));
+		var yPos = parseFloat(d3.select(this).select('rect').attr('y'));
+		if (click_activated && xPos === clicked_corr_xPos && yPos === clicked_corr_yPos)
+			return;
+
+		if (d3.event.type === "click") {
+			if (click_activated)
+				d3.select(clicked_corr_this)
+				.select('rect')
+				.attr('stroke', '#ccc')
+				.attr('stroke-dasharray', '1 4')
+				.attr('stroke-width', '1'); // Remove the black square for the previously clicked cell
+			clicked_corr_this = this;
+			clicked_corr_xPos = xPos;
+			clicked_corr_yPos = yPos;
+			click_activated = true;
+			clicked_corr_col = d.col;
+			clicked_corr_row = d.row;
+			clicked_corr_value = d.value;
+		}
+
+		activate_cell(this, xPos, yPos, d.col, d.row, d.value);
+
+		if (d3.event.type === "click")
+			drawScatter(d.col, d.row, whichrawdat, false);
 	}) // function for mouseover
-		.on('mouseout', function(d) {
-			d3.select('#corrtext').remove();
-		d3.selectAll('.corrlabel').remove();
+	.on('mouseout', function(d) {
+		d3.selectAll('#activate_cell').remove();
+		//d3.selectAll('.corrlabel').remove();
 		d3.select(this)
 			.select('rect')
 			.attr('stroke', '#ccc')
 			.attr('stroke-dasharray', '1 4')
 			.attr('stroke-width', '1');
 
+		if (click_activated)
+			activate_cell(clicked_corr_this, clicked_corr_xPos, clicked_corr_yPos, 
+				clicked_corr_col, clicked_corr_row, clicked_corr_value);
+
 		//Hide the tooltip
-		d3.selectAll('.tooltip').remove();
+		//d3.selectAll('.tooltip').remove();
+
 	})
-	.on('click', function(d) {
-		drawScatter(d.col, d.row, whichrawdat, false);
-	});
 
 
 } // Definition of drawD3
