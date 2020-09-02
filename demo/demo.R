@@ -14,6 +14,8 @@ dat2 <- dat0[dat0$Group=="BB", 2:ncol(dat0)]
 dim(dat1) # 102 x 48
 dim(dat2) # 98 x 48
 
+set.seed(1)
+
 # Self correlations
 t1 <- Sys.time()
 CorDiffViz::viz(dat_name="self_cors", dat1X=dat1, dat2X=dat2, dat1Y=NULL, dat2Y=NULL, 

@@ -123,8 +123,8 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 		plot_scatter_title(false);
 	}
 
-	var X_name = (is_X_Y ? vars_X : vars)[row];
-		Y_name = (is_X_Y ? vars_Y : vars)[col];
+	var X_name = vars_X[row];
+		Y_name = vars_Y[col];
 	if (flipped) {
 		var cx_dat1 = function(d) {return (is_X_Y ? dat1_X : dat1).dat[row][d];}
 		var cy_dat1 = function(d) {return (is_X_Y ? dat1_Y : dat1).dat[col][d];};
@@ -372,7 +372,6 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 
 	var corXscale = d3.scaleBand().rangeRound([0, w - w_smaller]).domain(d3.range(nvar_Y)),
 		corYscale = d3.scaleBand().rangeRound([0, h - h_smaller]).domain(d3.range(nvar_X)),
-		corColScale = d3.scaleLinear().domain([-1,0,1]).range(['crimson','white','slateblue']),
 		corRscale = d3.scaleSqrt().range([0, 0.5*corXscale.bandwidth()]).domain([0,1]); ////// corXscale.bandwidth() == corYscale.bandwidth() anyways
 
 
@@ -404,7 +403,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 		.attr('cx', function(d) {return corXscale(d.col) + 0.5*corXscale.bandwidth(); })
 		.attr('cy', function(d) {return corYscale(d.row) + 0.5*corYscale.bandwidth(); })
 		.attr('r', function(d) {return corRscale(Math.abs(d.value)); })
-		.style('fill', function(d) { return corColScale(d.value); });
+		.style('fill', function(d) { return corColScale(d.value); }); // Defined in preplot.js
 
 	function activate_cell(this_obj, xPos, yPos, col, row, value) {
 		d3.select(this_obj)
@@ -419,7 +418,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 			'x': corXscale(col) + 0.5*corXscale.bandwidth(),
 			'y': h - h_smaller + labelsize
 		})
-		.text((is_X_Y ? vars_Y : vars)[col])
+		.text(vars_Y[col])
 		.attrs({
 			'dominant-baseline': 'middle',
 			'text-anchor': 'middle'
@@ -433,7 +432,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 			// 'x': -margin.left*0.1,
 			// 'y': corXscale(row)
 		})
-		.text((is_X_Y ? vars_X : vars)[row])
+		.text(vars_X[row])
 		.attrs({
 			'dominant-baseline': 'middle',
 			'text-anchor': 'middle',

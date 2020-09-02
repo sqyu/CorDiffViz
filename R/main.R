@@ -85,7 +85,7 @@ get_raw_cors <- function(cal_cor, cor_name, dat1X, dat2X, dat1Y, dat2Y, name_dat
 }
 
 get_para_one <- function(raw_cors_safe, cor_name, cor_type, npn, adj_method, 
-                         ns, sides, alpha, Ygiven, verbose) {
+                         ns, sides, Ygiven, verbose) {
   if (verbose) {
     cat(rep("*",40),"\n",sep="")
     cat("Parametric tests using", cor_name, "correlation:", "\n")
@@ -320,7 +320,7 @@ viz <- function(dat_name, dat1X, dat2X, dat1Y=NULL, dat2Y=NULL, name_dat1="1", n
 
     ########## One-sample parametric tests ##########
     p_paras <- get_para_one(raw_cors_safe, cor_name, cor_type, npn, adj_method, 
-                             c(n1, n2), sides, alpha, pY, verbose)
+                             c(n1, n2), sides, pY, verbose)
     cor_paras <- sapply(name_dat12, function(dat_name){
       threshold_mat(raw_cors[[dat_name]], p_paras[[dat_name]], alpha)}, simplify=FALSE, USE.NAMES=TRUE)
     save_print_plot_one(raw_cors, cor_paras, p_paras, cor_name, "para", Xnames, Ynames, 
