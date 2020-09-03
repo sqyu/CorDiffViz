@@ -97,8 +97,10 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 		if (title === "") {
 			title = 'Scatter plot, ' + (whichdat ? plot1_name : plot2_name) + ', raw ' + (whichdat ? raw_cor1 : raw_cor2);
 			title_class = whichdat ? 'scatplottitle1' : 'scatplottitle2';
+			this_label_size = labelsize;
 		} else {
 			title_class = "scatplottitle_tmp";
+			this_label_size = labelsize - 2;
 		}
 		scplt_obj = whichdat ? scatterplot1 : scatterplot2;
 		scplt_obj.append('g')
@@ -111,7 +113,7 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 			'dominant-baseline': 'middle',
 			'text-anchor': 'middle'
 		})
-		.style("font-size", labelsize+"px");
+		.style("font-size", this_label_size+"px");
 	}
 
 	plot_scatter_title(true);
@@ -172,10 +174,10 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 		if (whichdat) {
 			d3.selectAll('.scatplottitle1').remove();
 			// If is_X_Y, dat1_X and dat1_Y have the same indices so does not matter
-			plot_scatter_title(true, "ID " + cut_string((is_X_Y ? dat1_X : dat1).ind[d], 6) + ", " + plot1_name + ", " + "(" + rounding(cx_dat1(d), 3) + ", " + rounding(cy_dat1(d), 3) + ")");
+			plot_scatter_title(true, "ID " + cut_string((is_X_Y ? dat1_X : dat1).ind[d], 8) + ", " + plot1_name + ", " + "(" + rounding(cx_dat1(d), 3) + ", " + rounding(cy_dat1(d), 3) + ")");
 		} else {
 			d3.selectAll('.scatplottitle2').remove();
-			plot_scatter_title(false, "ID " + cut_string((is_X_Y ? dat2_X : dat2).ind[d], 6) + ", " + plot2_name + ", " + "(" + rounding(cx_dat2(d), 3) + ", " + rounding(cy_dat2(d), 3) + ")");
+			plot_scatter_title(false, "ID " + cut_string((is_X_Y ? dat2_X : dat2).ind[d], 8) + ", " + plot2_name + ", " + "(" + rounding(cx_dat2(d), 3) + ", " + rounding(cy_dat2(d), 3) + ")");
 		}
 	}
 
@@ -322,29 +324,14 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 		whichrawdat="first";
 	} else {
 		if (is_X_Y) {
-			dat1_X = window["dat_"+whichrawdat+"_X"];
-			dat1_Y = window["dat_"+whichrawdat+"_Y"];
+			dat1_X = window["dat_" + whichrawdat + "_X"];
+			dat1_Y = window["dat_" + whichrawdat + "_Y"];
 		} else {
-			dat1 = window["dat_"+whichrawdat]
+			dat1 = window["dat_" + whichrawdat]
 		}
-		nind1 = window["nind_"+whichrawdat];
+		nind1 = window["nind_" + whichrawdat];
 	}
-	corrmat = window[datfile+"_mat"];
-
-	/*if (typeof window[datfile] === 'undefined'){
-		 corrplot.append('g').append('text')
-			.text(((!two || cortype !== "pearson") && testtype === "cai") ? "Cai tests only supported for two-sample pearson correlations." : "Data not available.")
-			.attrs({
-				'class': 'scatterlabel',
-				'x': (w-w_smaller)/2,
-				'y': (h-h_smaller)/2,
-				'text-anchor': 'middle',
-				'dominant-baseline': 'middle'
-			})
-			.style("font-size", labelsize+"px");
-		scatprompt.selectAll('g').remove();
-		return null
-	}*/
+	corrmat = window[datfile + "_mat"];
 
 	scatprompt.append('g').append('text')
 	.attr('dy', '-2em')

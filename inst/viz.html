@@ -6,13 +6,20 @@
 <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
 <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/1.6.5/cytoscape-cose-bilkent.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <body>
-<div class="select-folder-div">
-	<select id="select-folder" onchange="change_data(false)" style="position:relative; text-align:left;">
-		<option value="" selected disabled>Please select your data folder here</option>
-	</select>
-	<br/><br/>
+<div class="select_folder_and_choose_alpha_div" style="display: inline">
+	<div id="select_folder_div" style="display: inline">
+		<select id="select_folder" onchange="change_data(false)" style="position:relative; text-align:left;">
+			<option value="" selected disabled>Please select your data folder here</option>
+		</select>
+	</div>
+	<div id="choose_alpha_div" style="display: inline">
+		Significance level: <input id="choose_alpha" type="text" maxlength="10" style="display: inline;" value="0.05"/></input>
+		<button id="choose_alpha_submit" style="display: inline-block;">Confirm</button>
+	</div>
 </div>
+<br/><br/>
 <div id="pleasewait" style="position:absolute; text-align:left; vertical-align:top; font-size:50px">Please wait...</div>
 </body>
 
@@ -32,12 +39,12 @@ var w = 650, // ideal width for correlation plot; may be changed for the corr pl
 	h_btw_scat = 2*labelsize + 20, // Distance between two scatter plots (in case of two-sample)
 	num_ticks = 8; // Number of ticks in the axes for the scatterplot(s)
 
-	document.getElementById("select-folder").style.left = margin.left+"px";
+	document.getElementById("select_folder").style.left = margin.left+"px";
 	document.getElementById("pleasewait").style.left = (margin.left + w / 2) +"px";
 	document.getElementById("pleasewait").style.top = (h / 2) + "px";
 
 	function change_data(firstTime) {
-		var folderDropdown = document.getElementById("select-folder");
+		var folderDropdown = document.getElementById("select_folder");
 		window.name = folderDropdown.selectedIndex;
 		console.log("window.name set: " + window.name);
 		if (!firstTime)
@@ -66,7 +73,7 @@ var w = 650, // ideal width for correlation plot; may be changed for the corr pl
 	}
 
 	//var folder_name = window.prompt("Please enter the name of your data folder.", "dat");
-	var folderDropdown = document.getElementById("select-folder");
+	var folderDropdown = document.getElementById("select_folder");
 	for (folder_name of folder_names) {
 		var newOption = document.createElement("option");
 		newOption.text = newOption.value = folder_name;
@@ -149,12 +156,26 @@ var w = 650, // ideal width for correlation plot; may be changed for the corr pl
 </div>
 <svg></svg>
 
+<script>
+var inputBox = $("#choose_alpha");
+var submitButton = $("#choose_alpha_submit");
+alpha = document.getElementById("choose_alpha").value;
+console.log(alpha);
 
-<!--<script type='text/javascript' src="scripts/preplot.js"></script>
-<script type="text/javascript" src="scripts/drawD3.js"></script>
-<script type="text/javascript" src="scripts/drawCyto.js"></script>
-<script type="text/javascript" src="scripts/selections.js"></script>
-<script type='text/javascript' src="scripts/main.js">-->
+function change_alpha(){
+	new_alpha = $("#choose_alpha").val()
+	if (typeof new_alpha === 'undefined' || new_alpha <= 0 || new_alpha >= 1) 
+		alert('Please enter a significance level in (0, 1).');
+	else if (new_alpha != alpha) {
+		alpha = new_alpha;
+		console.log("Significance level changed to " + alpha);
+		Draw(true);
+	}
+}
+
+inputBox.change(change_alpha);
+submitButton.click(change_alpha);
+
 
 </script>
 

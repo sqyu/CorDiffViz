@@ -28,8 +28,8 @@ dat_json <- function(dat1X, dat2X, dat1Y, dat2Y, name1, name2, filename){
     if (ncol(dat1Y) != ncol(dat2Y) || length(colnames(dat1Y)) != length(colnames(dat2Y)) || any(colnames(dat1Y) != colnames(dat2Y))) stop("dat1Y and dat2Y have different number of columns or the column names do not match.")
   }
   ret1X <- ret2X <- list()
-  ret1X$ind <- paste(1:nrow(dat1X))
-  ret2X$ind <- paste(1:nrow(dat2X))
+  ret1X$ind <- rownames(dat1X)
+  ret2X$ind <- rownames(dat2X)
   varsX <- colnames(dat1X)
   ret1X$dat <- ret2X$dat <- list()
   colnames(dat1X) <- colnames(dat2X) <- NULL; 
@@ -40,8 +40,8 @@ dat_json <- function(dat1X, dat2X, dat1Y, dat2Y, name1, name2, filename){
   }
   if (!is.null(dat1Y)){
     ret1Y <- ret2Y <- list()
-    ret1Y$ind <- paste(1:nrow(dat1Y))
-    ret2Y$ind <- paste(1:nrow(dat2Y))
+    ret1Y$ind <- rownames(dat1Y)
+    ret2Y$ind <- rownames(dat2Y)
     varsY <- colnames(dat1Y)
     ret1Y$dat <- ret2Y$dat <- list()
     colnames(dat1Y) <- colnames(dat2Y) <- NULL; 
@@ -69,60 +69,6 @@ dat_json <- function(dat1X, dat2X, dat1Y, dat2Y, name1, name2, filename){
                     sep="\n"),
               filename)
   }
-}
-
-graph_json <- function(mats, filename, graph_names, row_names, col_names=NULL, tol=1e-10) {
-  dups <- unique(c(row_names, col_names)[duplicated(c(row_names, col_names))])
-  if (length(dups))
-    stop("The following node names are duplicated: ", dups, ".")
-  if (is.matrix(mats)) mats <- list(mats)
-  if (length(graph_names) != length(mats))
-    stop("mats and graph_names must have the same length.")
-  if (length(unique(graph_names)) < length(graph_names))
-    stop("Duplicates exist in graph_names: ", graph_names, ".")
-  colors <- grDevices::colorRampPalette(c("#DC143C", "white", "#6A5ACD"))(201) # red and slateblue in javascript code
-  get_color <- function(cor) {colors[round((cor+1)*100)+1]}
-  existing <- readfromjson(filename)
-  all_var_names <- c(row_names, col_names)
-  var_groups <- c(rep("X", length(row_names)), rep("Y", length(col_names)))
-  existing[["graph_nodes"]] <- lapply(1:length(all_var_names), function(vi){
-    list("data"=list("id"=all_var_names[vi]), "group"="nodes", "removed"=FALSE, 
-         "selected"=FALSE, "selectable"=TRUE, "locked"=FALSE, "grabbed"=FALSE, 
-         "grabbable"=TRUE, "classes"=var_groups[vi])
-  })
-  for (i in 1:length(mats)){
-    graph_name <- paste(graph_names[i], "_edges", sep="")
-    mat <- mats[[i]]
-    if (!is.matrix(mat)) stop("mats must be a matrix or a list of matrices.")
-    if (nrow(mat) != length(row_names))
-      stop("The ", i, "-th matrix must have number of rows equal to length(row_names). Got nrow(mat) = ", nrow(mat), " but length(row_names) = ", length(row_names), ".")
-    adj <- mat != 0
-    if (is.null(col_names)) {
-      if (ncol(mat) != length(row_names))
-        stop("The ", i, "-th matrix must have number of columns equal to length(row_names). Got ncol(mat) = ", ncol(mat), " but length(row_names) = ", length(row_names), ".")
-      if (any(abs(mat - t(mat)) > tol))
-        stop("The ", i, "-th matrix: mat must be symmetric.")
-      edges <- which(adj & upper.tri(adj), arr.ind=TRUE)
-    } else {
-      if (ncol(mat) != length(col_names))
-        stop("The ", i, "-th matrix must have number of columns equal to length(col_names). Got ncol(mat) = ", ncol(mat), " but length(col_names) = ", length(col_names), ".")
-      edges <- which(adj, arr.ind=TRUE)
-    }
-    existing[[paste(graph_names[i], "_maxDegree", sep="")]] <- max(c(colSums(adj), rowSums(adj)))
-    existing[[graph_name]] <- c(existing[[graph_name]], 
-       apply(which(adj & ((!is.null(col_names)) | upper.tri(adj)), arr.ind=TRUE), 1, 
-             function(pair) {
-               list("data"=list("id"=paste("edge",pair[1],pair[2],sep="_"),
-                                "source"=row_names[pair[1]],
-                                "target"=ifelse(is.null(col_names), row_names[pair[2]], col_names[pair[2]]),
-                          "value"=mat[pair[1],pair[2]], "color"=get_color(mat[pair[1],pair[2]])),
-              "group"="edges", "removed"=FALSE, "selected"=FALSE, "selectable"=TRUE, 
-              "locked"=FALSE, "grabbed"=FALSE, "grabbable"=TRUE, "classes"="")
-         }))
-  }
-  writetojson(paste(sapply(sort(names(existing)), function(x){
-    paste("var",x,"=",rjson::toJSON(existing[[x]]))}),
-    collapse="\n"), filename)
 }
 
 #' Sets up the html and javascript scripts in the current folder for visualization.
@@ -185,10 +131,10 @@ cor_json_cor <- function(cor_mats, cormatnames, filename, Ygiven){
     ### stores cor mat with name cormatname
     existing[[cormatname]] <- corr
     ### stores proportion of non-zero off-diagonal entries with name prop_cormatname
-    if (Ygiven)
-      existing[[paste("prop_",cormatname,sep="")]] <- as.double(sprintf("%.6f", 100*mean(cor_mat!=0)))
-    else
-      existing[[paste("prop_",cormatname,sep="")]] <- as.double(sprintf("%.6f", 100*mean(cor_mat[diag(ncol(cor_mat))==0]!=0)))
+    #if (Ygiven)
+    #  existing[[paste("prop_",cormatname,sep="")]] <- as.double(sprintf("%.6f", 100*mean(cor_mat!=0)))
+    #else
+    #  existing[[paste("prop_",cormatname,sep="")]] <- as.double(sprintf("%.6f", 100*mean(cor_mat[diag(ncol(cor_mat))==0]!=0)))
   }
   writetojson(paste(sapply(sort(names(existing)), function(x){paste("var",x,"=",rjson::toJSON(existing[[x]]))}), 
                     collapse="\n"),

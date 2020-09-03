@@ -49,10 +49,8 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
         }]
 	}
   
-	var num_nodes = nvar_X + (is_X_Y ? nvar_Y : 0),
-        cor_name = two ? ("diff_" + cortype + "_" + testtype) : ("cor_" + cortype + "_" + testtype + "_" + whichrawdat); //////
-
-	console.log(cor_name);
+	var num_nodes = nvar_X + (is_X_Y ? nvar_Y : 0);
+    corrmat = window[datfile + "_mat"];
 
     var cy = cytoscape({
   		container: document.getElementById('cy'),
@@ -84,8 +82,8 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
         {
         	selector: 'node',
         	style: {
-        		width: 1,
-        		height: 1
+        		width: 1, // Changed later after max degree is determined
+        		height: 1 // Changed later after max degree is determined
         	}
         },
         {
@@ -119,15 +117,14 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
 
     for (var row = 0; row < (is_X_Y ? nvar_X : (nvar_X - 1)); row++)
         for (var col = (is_X_Y ? 0 : (row + 1)); col < nvar_Y; col++) {
-            var this_val = window[cor_name + "_mat"][get_index(col, row, nvar_X, is_X_Y)].value;
-            if (this_val !== 0) /////
-            //console.log(row, col, vars_X[row], vars_Y[col], window[cor_name + "_mat"][get_index(col, row, nvar_X, is_X_Y)]);
+            var this_val = corrmat[get_index(col, row, nvar_X, is_X_Y)].value;
+            if (this_val !== 0)
                 cy.add([{
                     "data": {
                         id: "edge_" + row + "_" + col,
                         source: vars_X[row],
                         target: vars_Y[col],
-                        value: window[cor_name + "_mat"][get_index(col, row, nvar_X, is_X_Y)].value,
+                        value: corrmat[get_index(col, row, nvar_X, is_X_Y)].value,
                         color: corColScale(this_val),
                     },
                     "group": "edges", "removed": false, "selected": false, "selectable": true, "locked": false,

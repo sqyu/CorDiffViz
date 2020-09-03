@@ -114,12 +114,9 @@ save_print_plot_one <- function(raw_cors, cors, ps, cor_name, mode, Xnames, Ynam
   # cors: thresholded cor matrices; ps: p-value matrices
   if (!mode %in% c("para", "perm")) stop("save_print_plot_one: mode must be para or perm.")
   Ygiven <- !is.null(Ynames)
-  cor_json_cor(cor_mats=cors, 
-               cormatnames=c(paste("cor", cor_name, mode, c("first","second"), sep="_")), 
+  cor_json_cor(cor_mats=ps, 
+               cormatnames=c(paste("cor", cor_name, mode, c("first", "second"), "p", sep="_")), 
                filename=file.path(dat_folder, "cors.json"), Ygiven=Ygiven)
-  graph_json(cors, filename=file.path(dat_folder, "graphs.json"), 
-             graph_names=paste("graph", cor_name, mode, c("first", "second"), sep="_"), 
-             row_names=Xnames, col_names=Ynames)
   name_dat12 <- names(raw_cors)
   if (verbose) {
     for (samp_i in 1:2) {
@@ -169,21 +166,21 @@ plot_undirected <- function(mat, cor_name, node_names, filename, main, verbose, 
   grDevices::dev.off()
 }
 
-save_print_plot_diff <- function(mat, cor_name, mode, Xnames, Ynames,
+save_print_plot_diff <- function(mat, thresholded_mat, cor_name, mode, Xnames, Ynames,
                                  verbose, make_plot, dat_folder, plot_folder, layout_seed=NULL) {
+  # mat: matrix to be written, equals to thresholded_mat for "cai" and "raw", but p values for other modes
   if (!mode %in% c("para", "perm", "cai", "raw")) stop("save_print_plot_diff: mode must be raw, para, perm or cai.")
   Ygiven <- !is.null(Ynames)
-  if (verbose && mode != "raw") cat(pct_ones(mat != 0, Ygiven), "% ", ifelse(Ygiven, "", "off-diagonal "), "entries are significantly different.\n", sep="")
-  cor_json_cor(cor_mats=mat, cormatnames=paste("diff", cor_name, mode, sep="_"), 
+  if (verbose && mode != "raw") {
+    cat(pct_ones(thresholded_mat != 0, Ygiven), "% ", ifelse(Ygiven, "", "off-diagonal "), "entries are significantly different.\n", sep="")
+  }
+  cor_json_cor(cor_mats=mat, cormatnames=ifelse(mode == "raw" || mode == "cai", paste("diff", cor_name, mode, sep="_"), paste("diff", cor_name, mode, "p", sep="_")), 
                filename=file.path(dat_folder, "diffs.json"), Ygiven=Ygiven)
-  graph_json(mat, filename=file.path(dat_folder, "graphs.json"), 
-             graph_names=paste("graph_diff", cor_name, mode, sep="_"), 
-             row_names=Xnames, col_names=Ynames)
   if (make_plot) {
     ### Heat map for differences; divide by 2 to standardize to [-1,1]
-    make_heat_map(mat/2, cor_name, paste("heatmap", mode, "diff.pdf", sep="_"), verbose, plot_folder)
+    make_heat_map(thresholded_mat/2, cor_name, paste("heatmap", mode, "diff.pdf", sep="_"), verbose, plot_folder)
     if (mode != "raw" && !Ygiven) ## For self correlations only?? ####
-    plot_undirected(mat, cor_name, Xnames, paste("graphmap", mode, "diff.pdf", sep="_"), 
+    plot_undirected(thresholded_mat, cor_name, Xnames, paste("graphmap", mode, "diff.pdf", sep="_"), 
                     paste("Differential network, ", mode, " tests, ", cor_name,", correlations", sep=""), 
                     verbose, plot_folder, layout_seed=layout_seed)
   }
@@ -217,6 +214,7 @@ save_print_plot_diff <- function(mat, cor_name, mode, Xnames, Ynames,
 #' If \code{dat1Y} and \code{dat2Y} are \code{NULL}, the function estimates the difference \code{cor(dat1X) - cor(dat2X)} and truncates to 0 the entries that are below a certain threshold determined by parameteric/permutation tests.
 #' If \code{dat1Y} and \code{dat2Y} are not \code{NULL}, the difference \code{cor(dat1X, dat1Y) - cor(dat2X, dat2Y)} is estimated.
 #' The dimensions must be as follows: \code{dat1X} has dimension n1 x pX, \code{dat2X} n2 x pX, and if provided, \code{dat1Y} n1 x pY and \code{dat2Y} n2 x pY.
+#' The column names will be used as names for each variable/covariate, and the row names will be used as identifier for each observation/subject.
 #' @return Does not return anything, but instead creates folders and files under \code{file.path("dats", dat_name)} and \code{file.path("plots", dat_name)}.
 #' @examples
 #' dat0 <- read.csv(file.path(path.package("CorDiffViz"), "extdata/sample_data.csv"))
@@ -267,10 +265,18 @@ viz <- function(dat_name, dat1X, dat2X, dat1Y=NULL, dat2Y=NULL, name_dat1="1", n
     warning("dat1X == dat1Y and dat2X == dat2Y. dat1Y and dat2Y changed to NULL automatically.")
     dat1Y <- dat2Y <- NULL; pY <- 0
   }
+  if (is.null(rownames(dat1X))) rownames(dat1X) <- paste(1:nrow(dat1X))
+  if (is.null(rownames(dat2X))) rownames(dat2X) <- paste(1:nrow(dat2X))
   ## Sanity check for column names, and assign column names
   Xnames <- colnames(dat1X) <- colnames(dat2X) <- get_colnames(colnames(dat1X), colnames(dat2X), pX, ifelse(pY, "X", ""))
   if (pY) {
     Ynames <- colnames(dat1Y) <- colnames(dat2Y) <- get_colnames(colnames(dat1Y), colnames(dat2Y), pY, "Y")
+    if (is.null(rownames(dat1Y))) rownames(dat1Y) <- paste(1:nrow(dat1Y))
+    else if (any(rownames(dat1X) != rownames(dat1Y)))
+      stop("rownames(dat1X) and rownames(dat1Y) must be either equal or undefined.")
+    if (is.null(rownames(dat2Y))) rownames(dat2Y) <- paste(1:nrow(dat2Y))
+    else if (any(rownames(dat2X) != rownames(dat2Y)))
+      stop("rownames(dat2X) and rownames(dat2Y) must be either equal or undefined.")
   } else {Ynames <- NULL}
   
   if (length(sides) != 1) {## If sides is not a scalar
@@ -350,19 +356,19 @@ viz <- function(dat_name, dat1X, dat2X, dat1Y=NULL, dat2Y=NULL, name_dat1="1", n
     ########## Two-sample difference in raw correlations ##########
     raw_diff <- raw_cors[[1]] - raw_cors[[2]]
     if (!pY) diag(raw_diff) <- 0
-    save_print_plot_diff(raw_diff, cor_name, "raw", Xnames, Ynames, verbose, make_plot, dat_folder, plot_folder, layout_seed)
+    save_print_plot_diff(raw_diff, raw_diff, cor_name, "raw", Xnames, Ynames, verbose, make_plot, dat_folder, plot_folder, layout_seed)
     ########## Two-sample difference in raw correlations using Cai and Zhang ##########
     if (cor_type == "pearson"){
       if (verbose) cat(rep("*",40), "\nTesting difference using Cai and Zhang:\n", sep="")
       Cai_diff <- Cai(dat1X, dat2X, dat1Y, dat2Y, dmax=100, hmax=5, fold=5, verbose=verbose, seed=Cai_seed) ## Pearson only, 11.819681%
-      save_print_plot_diff(Cai_diff, cor_name, "cai", Xnames, Ynames, verbose, make_plot, dat_folder, plot_folder, layout_seed)
+      save_print_plot_diff(Cai_diff, Cai_diff, cor_name, "cai", Xnames, Ynames, verbose, make_plot, dat_folder, plot_folder, layout_seed)
     }
     ########## Two-sample difference in raw correlations using parametric tests ##########
     if (verbose) cat(rep("*",40), "\nTesting difference using parametric tests:\n", sep="")
     cor2s_to_p <- cor2s_to_p_function_generator(cor_type=cor_type, npn=npn)
     p_para_diff <- rr_diff_para(cor2s_to_p, sides, raw_cors_safe, n1, n2, pY, adj_method=adj_method)
     diff_para <- threshold_mat(raw_diff, p_para_diff, alpha)
-    save_print_plot_diff(diff_para, cor_name, "para", Xnames, Ynames, verbose, make_plot, dat_folder, plot_folder, layout_seed)
+    save_print_plot_diff(p_para_diff, diff_para, cor_name, "para", Xnames, Ynames, verbose, make_plot, dat_folder, plot_folder, layout_seed)
     ########## Two-sample difference in raw correlations using permutation tests ##########
     if (permutation){
       diff_perm_cache <- list()
@@ -378,7 +384,7 @@ viz <- function(dat_name, dat1X, dat2X, dat1Y=NULL, dat2Y=NULL, name_dat1="1", n
         if (cor_type %in% c("kendall", "spearman") && cor_type %in% cor_names && paste("sin_", cor_type, sep="") %in% cor_names)
           diff_perm_cache[[cor_type]] <- list("p_perm_diff"=p_perm_diff, "diff_perm"=diff_perm)  
       }
-      save_print_plot_diff(diff_perm, cor_name, "perm", Xnames, Ynames, verbose, make_plot, dat_folder, plot_folder, layout_seed)
+      save_print_plot_diff(p_perm_diff, diff_perm, cor_name, "perm", Xnames, Ynames, verbose, make_plot, dat_folder, plot_folder, layout_seed)
     }
     
     if (verbose) cat("Calculations for ", cor_name, " correlations done.","\n", rep("*",80),"\n",sep="")

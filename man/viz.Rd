@@ -75,6 +75,7 @@ Main function for estimating and writing self/differential correlation matrices 
 If \code{dat1Y} and \code{dat2Y} are \code{NULL}, the function estimates the difference \code{cor(dat1X) - cor(dat2X)} and truncates to 0 the entries that are below a certain threshold determined by parameteric/permutation tests.
 If \code{dat1Y} and \code{dat2Y} are not \code{NULL}, the difference \code{cor(dat1X, dat1Y) - cor(dat2X, dat2Y)} is estimated.
 The dimensions must be as follows: \code{dat1X} has dimension n1 x pX, \code{dat2X} n2 x pX, and if provided, \code{dat1Y} n1 x pY and \code{dat2Y} n2 x pY.
+The column names will be used as names for each variable/covariate, and the row names will be used as identifier for each observation/subject.
 }
 \examples{
 dat0 <- read.csv(file.path(path.package("CorDiffViz"), "extdata/sample_data.csv"))

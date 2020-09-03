@@ -182,3 +182,32 @@ body {
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+
+#select_folder_div, #choose_alpha_div{    
+    display: inline;
+}
+
+#select_folder{
+  width: 200px;
+  text-overflow: ellipsis;
+}
+
+div#choose_alpha_div{
+  left: 300px;
+  position: absolute;
+}
+
+#choose_alpha{
+  width: 50px;
+}
+
+#choose_alpha_submit {
+    display: inline;
+    background-color: #ddd;
+    padding: 1px 1px;
+    font-family: sans-serif, Arial;
+    font-size: 12px;
+    border: 2px solid #444;
+    border-radius: 4px;
+}

@@ -11,13 +11,49 @@ function toggle_div() {
 }
 
 
-function Draw() {
+function Draw(only_alpha_changed = false) {
 	console.log(whichlayout);
+	var datfile = datafilename(cortype, testtype, two, whichdata);
+	if (testtype == "raw" || (two && cortype === "pearson" && testtype === "cai")) { // Does not depend on significance level, no need to threshold or replot on change of alpha
+		if (only_alpha_changed) // If only alpha changed, no need to replot
+			return;
+		var total_nonzero = 0;
+		if (typeof window["prop_" + datfile] === "undefined") { // Calculate the proportion of non-zero entries for the first time
+			var total_nonzero = 0, corrmat = window[datfile + "_mat"];
+			console.log(corrmat);
+			if (is_X_Y) { // Sum up and divide
+				for (var i = 0; i < corrmat.length; i++)
+					total_nonzero += (corrmat[i].value != 0);
+				window["prop_" + datfile] = total_nonzero * 100.0 / corrmat.length;
+			} else { // Ignore diagonal entries
+				for (var i = 0; i < nvar_X - 1; i++)
+        			for (var j = i + 1; j < nvar_X; j++)
+	           			total_nonzero += (corrmat[j*(j+1)/2+i].value != 0);
+	           	window["prop_" + datfile] = total_nonzero * 200.0 / (nvar_X * (nvar_X - 1));
+			}
+		}
+	} else if (typeof window[datfile + "_alpha"] === 'undefined' || window[datfile + "_alpha"] != alpha) { // Re-threshold only if alpha has changed since last thresholding for this matrix
+			console.log("Thresholding for " + datfile + " with alpha = " + alpha);
+			var raw_mat = window[datafilename(cortype, "raw", two, whichdata) + "_mat"], 
+				ps = window[datfile + "_p_mat"],
+				total_nonzero = 0;
+			window[datfile + "_mat"] = [];
+			for (var i = 0; i < raw_mat.length; ++i) {
+				var this_significant = (ps[i].value <= alpha);
+				total_nonzero += this_significant;
+				window[datfile + "_mat"].push({row: ps[i].row, col: ps[i].col, value: (this_significant ? raw_mat[i].value : 0)}); // json written by column in R; so need to reverse when reading in
+			}
+			window["prop_" + datfile] = total_nonzero * (is_X_Y ? (100.0 / raw_mat.length) : (200.0 / (nvar_X * (nvar_X - 1))));
+			window[datfile + "_alpha"] = alpha;
+	}
+	console.log(window["prop_" + datfile] + "% nonzero");
 	if (d3ORctyo) {
-		drawCyto(cortype, testtype, two, datafilename(cortype,testtype,two,whichdata), whichdata, whichlayout);
+		console.log("Plotting Cytoscape for " + datfile)
+		drawCyto(cortype, testtype, two, datfile, whichdata, whichlayout);
 	}
 	else {
-		drawD3(cortype, testtype, two, datafilename(cortype,testtype,two,whichdata), whichdata);
+		console.log("Plotting D3 for " + datfile)
+		drawD3(cortype, testtype, two, datfile, whichdata);
 	}
 }
 
