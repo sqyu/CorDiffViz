@@ -184,7 +184,7 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 
 	scatterplot1.append('g')
 	.attr('class', 'x axis')
-	.attr('transform', 'translate(' + 0 + ',' + (two ? scatterplot_height : h * plot_scale) + ')')
+	.attr('transform', 'translate(' + 0 + ',' + scatterplot_height + ')')
 	.call(xAxis1)
 	.on("click", function() {drawScatter(col, row, whichrawdat, !flipped);});
 
@@ -282,7 +282,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 	console.log("D3 Showing "+datfile);
 
 	console.log(svg);
-	scatterplot_height = (two ? (h-h_btw_scat-labelsize)/2 - tickandaxis : h) * plot_scale;
+	scatterplot_height = (two ? (h-h_btw_scat-labelsize)/2 - tickandaxis : h-tickandaxis) * plot_scale;
 
 	var svg_elt = document.getElementById("svg"),
 		svg_g_elt = document.getElementById("svg_g"),
