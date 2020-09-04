@@ -1,42 +1,20 @@
 
 // Attention: X is the variable defined by the rows and Y is the variable defined by the columns, opposite to x and y in Javascript.
-var svg = d3.select('svg')
+svg = d3.select('#D3_div').append('svg')
 	.attrs({
-		'width': full_width + margin.left + margin.right,
-		'height': h + margin.top + margin.bottom
-	})
-	.append('g')
-	.attrs({
-		'transform': 'translate(' + margin.left + ',' + margin.top + ')',
-		'width': full_width,
-		'height': h
+		'class': 'svg',
+		'id': 'svg'
 	});
-
-var corrplot = svg.append('g')
-	.attrs({
-		'id': 'corrplot',
-		'transform': 'translate(' + w_smaller / 2 + ',' + h_smaller / 2 + ')',
-		"width": w - w_smaller,
-		"height": h - h_smaller
-	});
-
-var scatprompt = svg.append('g')
-	.attrs({
-		'id': 'scatprompt',
-		'transform': 'translate(' + (w + pad) + ',' + h/2 + ')'
-	});
-
-var scatterplot1 = svg.append('g')
-	.attrs({
-		'id': 'scatterplot1',
-		'transform': 'translate(' + (w + pad) + ',0)'
-	});
-
-var scatterplot2 = svg.append('g')
-	.attrs({
-		'id': 'scatterplot2',
-		'transform': 'translate(' + (w + pad) + ',' + (h+h_btw_scat)/2 + ')'
-	});
+svg_g = svg.append('g')
+	.attr('id', 'svg_g');
+corrplot = svg_g.append('g')
+	.attr('id', 'corrplot'),
+scatprompt = svg_g.append('g')
+	.attr('id', 'scatprompt');
+scatterplot1 = svg_g.append('g')
+	.attr('id', 'scatterplot1');
+scatterplot2 = svg_g.append('g')
+	.attr('id', 'scatterplot2');
 
 function get_index(col, row, nvar_X, is_X_Y) {
 	if (is_X_Y) // X_Y case 
@@ -58,27 +36,26 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 
 	var Y_extent1 = d3.extent((is_X_Y ? dat1_Y : dat1).dat[col]),
 		X_extent1 = d3.extent((is_X_Y ? dat1_X : dat1).dat[row]);
-	var scatterplot_height = two ? (h-h_btw_scat)/2 : h;
 
 	var xScale1 = d3.scaleLinear()
 		.domain(flipped ? X_extent1 : Y_extent1) // Recall: x is the col coordinate, but X is the data indexed by rows
-		.range([0, w_scat]);
+		.range([0, w_scat * plot_scale]);
 	var yScale1 = d3.scaleLinear()
 		.domain(flipped ? Y_extent1 : X_extent1)
 		.range([scatterplot_height, 0]);
 
 	var xAxis1 = d3.axisBottom(xScale1)
-		.ticks(num_ticks);
+		.ticks(num_ticks)
 
 	var yAxis1 = d3.axisLeft(yScale1)
-		.ticks(num_ticks);
+		.ticks(num_ticks)
 
 	if (two){
 		var Y_extent2 = d3.extent((is_X_Y ? dat2_Y : dat2).dat[col]),
 			X_extent2 = d3.extent((is_X_Y ? dat2_X : dat2).dat[row]);
 		var xScale2 = d3.scaleLinear()
 			.domain(flipped ? X_extent2 : Y_extent2)
-			.range([0, w_scat]);
+			.range([0, w_scat * plot_scale]);
 		var yScale2 = d3.scaleLinear()
 			.domain(flipped ? Y_extent2 : X_extent2)
 			.range([scatterplot_height, 0]);
@@ -108,12 +85,12 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 		.text(title)
 		.attrs({
 			'class': title_class,
-			'x': w_scat/2,
-			'y': -labelsize,
+			'x': (w_scat/2) * plot_scale,
+			'y': -labelsize * plot_scale,
 			'dominant-baseline': 'middle',
 			'text-anchor': 'middle'
 		})
-		.style("font-size", this_label_size+"px");
+		.style("font-size", this_label_size * plot_scale+"px");
 	}
 
 	plot_scatter_title(true);
@@ -191,7 +168,7 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 		'class': 'point',
 		'cx': cx_func1,
 		'cy': cy_func1,
-		'r': 5,
+		'r': 5 * plot_scale,
 		'stroke': 'none',
 		'fill': 'black'
 	})
@@ -207,7 +184,7 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 
 	scatterplot1.append('g')
 	.attr('class', 'x axis')
-	.attr('transform', 'translate(' + 0 + ',' + (two ? (h-h_btw_scat)/2 : h) + ')')
+	.attr('transform', 'translate(' + 0 + ',' + (two ? scatterplot_height : h * plot_scale) + ')')
 	.call(xAxis1)
 	.on("click", function() {drawScatter(col, row, whichrawdat, !flipped);});
 
@@ -217,27 +194,27 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 	.call(yAxis1)
 	.on("click", function() {drawScatter(col, row, whichrawdat, !flipped);});
 
-	scatterplot1.append('g').append('text')
+	scatterplot1.append('g').append('text') // variable name for x axis
 	.text(flipped ? X_name : Y_name)
 	.attrs({
 		'class': 'scatterlabel',
-		'x': w_scat/2,
-		'y': h + 1.5*labelsize,
+		'x': w_scat * plot_scale / 2,
+		'y': (h + tickandaxis) * plot_scale,
 		'text-anchor': 'middle',
 		'dominant-baseline': 'middle'
 	})
-	.style("font-size", labelsize+"px")
+	.style("font-size", labelsize * plot_scale+"px")
 	.on("click", function() {drawScatter(col, row, whichrawdat, !flipped);});
 
-	scatterplot1.append('g').append('text')
-	.text(flipped ? Y_name : X_name)
+	scatterplot1.append('g').append('text') // variable name for y axis
+	.text(flipped ? Y_name : X_name) 
 	.attrs({
 		'class': 'scatterlabel',
-		'transform': 'translate(' + (w_scat+labelsize) + ',' + (h/2) + ')rotate(270)',
+		'transform': 'translate(' + (w_scat+labelsize) * plot_scale + ',' + (h/2) * plot_scale + ')rotate(270)',
 		'dominant-baseline': 'middle',
 		'text-anchor': 'middle'
 	})
-	.style("font-size", labelsize+"px")
+	.style("font-size", labelsize * plot_scale+"px")
 	.on("click", function() {drawScatter(col, row, whichrawdat, !flipped);});
 
 	if (two){
@@ -261,7 +238,7 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 			'class': 'point',
 			'cx': cx_func2,
 			'cy': cy_func2,
-			'r': 5,
+			'r': 5 * plot_scale,
 			'stroke': 'none',
 			'fill': 'black'
 		})
@@ -276,7 +253,7 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 		console.log("Showing scatter plot of " + plot2_name)
 		scatterplot2.append('g')
 		.attr('class', 'x axis')
-		.attr('transform', 'translate(' + 0 + ',' + (h-h_btw_scat)/2  + ')')
+		.attr('transform', 'translate(' + 0 + ',' + scatterplot_height  + ')')
 		.call(xAxis2)
 		.on("click", function() {drawScatter(col, row, whichrawdat, !flipped);});
 
@@ -287,22 +264,52 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 		.on("click", function() {drawScatter(col, row, whichrawdat, !flipped);});
 	}
 
+
+	svg.selectAll(".x.axis>.tick>text,.y.axis>.tick>text")
+	.each(function(d, i){d3.select(this).style("font-size", ticksize * plot_scale + "px");});
+
+
 }; // Definition of drawScatter
 
 
 function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 	click_activated = false;
 	corrplot.selectAll('g').remove();
+	scatprompt.selectAll('g').remove();
 	scatterplot1.selectAll('g').remove();
 	scatterplot2.selectAll('g').remove();
-	console.log("Showing "+datfile);
+	d3.selectAll('#activated_cell').remove();
+	console.log("D3 Showing "+datfile);
+
+	console.log(svg);
+	scatterplot_height = (two ? (h-h_btw_scat-labelsize)/2 - tickandaxis : h) * plot_scale;
+
+	var svg_elt = document.getElementById("svg"),
+		svg_g_elt = document.getElementById("svg_g"),
+		corrplot_elt = document.getElementById("corrplot"),
+		scatprompt_elt = document.getElementById("scatprompt"),
+		scatterplot1_elt = document.getElementById("scatterplot1"),
+		scatterplot2_elt = document.getElementById("scatterplot2");
+	svg_elt.setAttribute("width", (full_width + margin.left + margin.right) * plot_scale);
+	svg_elt.setAttribute("height", (h + margin.top + margin.bottom + 2 * labelsize) * plot_scale);
+	svg_g_elt.setAttribute("transform", 'translate(' + margin.left * plot_scale + ',' + margin.top * plot_scale + ')');
+	svg_g_elt.setAttribute("width", full_width * plot_scale);
+	svg_g_elt.setAttribute("height", h * plot_scale);
+	corrplot_elt.setAttribute("transform", 'translate(' + w_smaller * plot_scale / 2 + ',' + h_smaller * plot_scale / 2 + ')');
+	corrplot_elt.setAttribute("width", (w - w_smaller) * plot_scale);
+	corrplot_elt.setAttribute("height", (h - h_smaller) * plot_scale);
+	scatprompt_elt.setAttribute("transform", 'translate(' + (w + pad) * plot_scale + ',' + h * plot_scale / 2 + ')');
+	scatterplot1_elt.setAttribute("transform", 'translate(' + (w + pad) * plot_scale + ',0)')
+	scatterplot1_elt.setAttribute("width", w_scat * plot_scale);
+	scatterplot2_elt.setAttribute("transform", 'translate(' + (w + pad) * plot_scale + ',' + (scatterplot_height + (tickandaxis + h_btw_scat + labelsize) * plot_scale) + ')') // Starts right after second title
+	scatterplot2_elt.setAttribute("width", w_scat * plot_scale);
 
 	corrplot.append('g').append('rect')
 		.attrs({
 			'class': 'corrbox',
 			'x': 0, 'y': 0,
-			'width': w - w_smaller,
-			'height': h - h_smaller,
+			'width': (w - w_smaller) * plot_scale,
+			'height': (h - h_smaller) * plot_scale,
 			'fill': 'none',
 			'stroke': 'black',
 			'stroke-dasharray': '20,20',
@@ -336,29 +343,29 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 	scatprompt.append('g').append('text')
 	.attr('dy', '-2em')
 	.text('Click on an entry of the')
-	.style("font-size", labelsize+"px");
+	.style("font-size", labelsize * plot_scale+"px");
 	scatprompt.append('g').append('text')
 	.attr('dy', '0em')
 	.text('correlation matrix on the left')
-	.style("font-size", labelsize+"px");
+	.style("font-size", labelsize * plot_scale+"px");
 	scatprompt.append('g').append('text')
 	.attr('dy', '2em')
 	.text('to explore the scatter plot(s).')
-	.style("font-size", labelsize+"px");
+	.style("font-size", labelsize * plot_scale+"px");
 
 	corrplot.append('g').append('text')
 	.text((two ? 'Differential correlation matrix' : 'Correlation matrix') + ": " + rounding(window["prop_"+datfile], 2) + "% nonzero")
 	.attrs({
 		'class': 'corrplottitle',
-		'x': w/2 - w_smaller/2,
-		'y': -margin.top/2 - h_smaller/2,
+		'x': (w - w_smaller) * plot_scale / 2,
+		'y': -(margin.top + h_smaller) * plot_scale / 2,
 		'dominant-baseline': 'middle',
 		'text-anchor': 'middle'
 	})
-	.style("font-size", labelsize+"px");
+	.style("font-size", labelsize * plot_scale +"px");
 
-	var corXscale = d3.scaleBand().rangeRound([0, w - w_smaller]).domain(d3.range(nvar_Y)),
-		corYscale = d3.scaleBand().rangeRound([0, h - h_smaller]).domain(d3.range(nvar_X)),
+	var corXscale = d3.scaleBand().rangeRound([0, (w - w_smaller) * plot_scale]).domain(d3.range(nvar_Y)),
+		corYscale = d3.scaleBand().rangeRound([0, (h - h_smaller) * plot_scale]).domain(d3.range(nvar_X)),
 		corRscale = d3.scaleSqrt().range([0, 0.5*corXscale.bandwidth()]).domain([0,1]); ////// corXscale.bandwidth() == corYscale.bandwidth() anyways
 
 
@@ -403,14 +410,14 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 			'id': "activated_cell",
 			'class': 'corrlabel',
 			'x': corXscale(col) + 0.5*corXscale.bandwidth(),
-			'y': h - h_smaller + labelsize
+			'y': (h - h_smaller + labelsize) * plot_scale
 		})
 		.text(vars_Y[col])
 		.attrs({
 			'dominant-baseline': 'middle',
 			'text-anchor': 'middle'
 		})
-		.style("font-size", labelsize+"px");
+		.style("font-size", labelsize * plot_scale+"px");
 
 		corrplot.append('text')
 		.attrs({
@@ -423,18 +430,18 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 		.attrs({
 			'dominant-baseline': 'middle',
 			'text-anchor': 'middle',
-			'transform': 'translate(' + (-labelsize) + ',' + (corYscale(row) + 0.5*corYscale.bandwidth()) + ')rotate(270)'
+			'transform': 'translate(' + (-labelsize) * plot_scale + ',' + (corYscale(row) + 0.5*corYscale.bandwidth()) + ')rotate(270)'
 		})
-		.style("font-size", labelsize+"px");
+		.style("font-size", labelsize * plot_scale+"px");
 
 		corrplot.append('rect')
 		.attrs({
 			'id': "activated_cell",
 			'class': 'tooltip',
-			'x': xPos - 20 + corXscale.bandwidth() / 2,
-			'y': yPos - 30,
-			'width': 40,
-			'height': 20,
+			'x': xPos - 20 * plot_scale + corXscale.bandwidth() / 2,
+			'y': yPos - 30 * plot_scale,
+			'width': 40 * plot_scale,
+			'height': 20 * plot_scale,
 			'fill': 'rgba(200, 200, 200, 0.5)',
 			'stroke': 'black'
 		});
@@ -444,10 +451,10 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 			'id': "activated_cell",
 			'class': 'tooltip',
 			'x': xPos + corXscale.bandwidth() / 2,
-			'y': yPos - 15,
+			'y': yPos - 15 * plot_scale,
 			'text-anchor': 'middle',
 			'font-family': 'sans-serif',
-			'font-size': '14px',
+			'font-size': 14 * plot_scale + 'px',
 			'font-weight': 'bold',
 			'fill': 'black'
 		})

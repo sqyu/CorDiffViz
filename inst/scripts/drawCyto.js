@@ -53,7 +53,7 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
     corrmat = window[datfile + "_mat"];
 
     var cy = cytoscape({
-  		container: document.getElementById('cy'),
+  		container: document.getElementById('cy_left'),
   		//elements: graph_nodes,
     	style: node_color_style.concat([
     	{
@@ -67,7 +67,7 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
             selector: 'node.highlight',
             style: {
                 label: 'data(id)',
-                'font-size': 30 
+                'font-size': 30
             }
         },
         {
@@ -143,9 +143,43 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
         node_size_func = function(node){return node_size_mult_min + Math.sqrt(node.degree(false)) * node_size_slope};
         cy.nodes().style("width", node_size_func);
         cy.nodes().style("height", node_size_func);
+
+        /* Attempt to resize
+        var cy_left_elt = document.getElementById("cy_left"),
+        cy_right_elt = document.getElementById("cy_right");
+        cy_left_elt.setAttribute("width", cy_left_width * plot_scale);
+        cy_left_elt.setAttribute("height", cy_height * plot_scale);
+        if (cy_left_elt.childNodes.length) {
+            cy_left_elt.childNodes[0].style.width = (cy_left_width * plot_scale) + "px";
+            cy_left_elt.childNodes[0].style.height = (cy_height * plot_scale) + "px";
+            console.log(cy_left_elt.childNodes[0]);
+            console.log(cy_left_elt.childNodes[0].style);
+        }
+        cy_right_elt.setAttribute("width", cy_right_width * plot_scale);
+        cy_right_elt.setAttribute("height", cy_height * plot_scale);
+        cy_right_elt.style.left = (document.getElementById("cy_left").getBoundingClientRect().right + 10) + "px"; // Change the left position of cor_list
+            
+        var canvases = document.querySelectorAll('canvas');
+        if (canvases)
+            canvases.forEach(function(canvas){
+                // Make it visually fill the positioned parent
+                canvas.style.width ='100%';
+                canvas.style.height='100%';
+                // ...then set the internal size to match
+                canvas.width  = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+            });
+        console.log(canvases);
+
+        cy.resize();
+        cy.fit();*/
+
+        cy.elements().layout({"name": whichlayout}).run();
+        
     });
 
-    cy.elements().layout({"name": whichlayout}).run();
+
+
 
 	function clear_all_highlight() {
 		cy.elements().removeClass('transparent').removeClass('highlight');
@@ -177,7 +211,7 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
   		edge.addClass('highlight').connectedNodes().addClass('highlight');
   		console.log(edge);
   		let cor_list = "Node 1: " + edge.data("source") + "<br/><br/>Node 2: " + edge.data("target") + "<br><br/>" + (two ? "Differential c" : "C") + "orrelation: " + rounding(edge.data('value'), 3);
-  		document.getElementById("cor_list").style["font-size"] = cyto_cor_text_size + "px";
+  		document.getElementById("cor_list").style["font-size"] = cyto_cor_text_size+ "px";
   		document.getElementById("cor_list").innerHTML = cor_list;
 	}
 

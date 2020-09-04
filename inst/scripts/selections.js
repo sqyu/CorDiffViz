@@ -1,7 +1,14 @@
 function toggle_div() {
-	var d3_div = document.getElementById("D3"); 
-	var cy_div = document.getElementById("CY");
+	var d3_div = document.getElementById("D3_div"); 
+	var cy_div = document.getElementById("CY_div");
 	if (d3_div.style.display !== "none") {
+		// Set the left and top positions of CY to those of D3
+		// The left margin of cy_right_div will be set afterwards in drawCyto after cy_left is plotted
+		var cy_left_div = document.getElementById("cy_left"),
+			cy_right_div = document.getElementById("cy_right"),
+			d3_svg_rect = d3_div.getBoundingClientRect();
+		cy_left_div.style.top = cy_right_div.style.top = cy_div.style.top = d3_svg_rect.top + "px";
+		cy_left_div.style.left = cy_div.style.left = d3_svg_rect.left + "px";
 		d3_div.style.display = "none"; 
 		cy_div.style.display = "inline"; 
 	} else {
@@ -9,7 +16,6 @@ function toggle_div() {
 		cy_div.style.display = "none"; 
 	}
 }
-
 
 function Draw(only_alpha_changed = false) {
 	console.log(whichlayout);
