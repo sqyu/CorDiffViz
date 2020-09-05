@@ -18,12 +18,25 @@
 		Significance level: <input id="choose_alpha" type="text" maxlength="10" style="display: inline;" value="0.05"/></input>
 		<button id="choose_alpha_submit" style="display: inline-block;">Confirm</button>
 	</div>
+	<div id="select_var_list_div" style="display: inline">
+		<form>
+			<div class="multiselect">
+				<div class="selectBox" onclick="showCheckboxes()">
+					<select><option>Variables to plot</option></select>
+					<div class="overSelect"></div>
+		    	</div>
+			    <div id="checkboxes">
+			    </div>
+			</div>
+		</form>
+	</div>
 </div>
 <br/><br/>
 <div id="pleasewait" style="position:absolute; text-align:left; vertical-align:top; font-size:50px">Please wait...</div>
 </body>
 
 <script type="text/javascript">
+
 // !!!!!!!!!!! If you changed your folder names manually, please edit the list here !!!!!!!!!!!
 folder_names = [
 ]
@@ -92,6 +105,73 @@ var w = 650, // ideal width for correlation plot; may be changed for the corr pl
 	if (0 <= window.name && window.name <= folder_names.length)
 		folderDropdown.selectedIndex = window.name;
 	change_data(true);
+
+
+
+	var preset_scales = [25, 33.3, 50, 66.7, 75, 80, 90, 100, 110, 125, 150, 175, 200, 250, 300, 400, 500],
+		max_preset_scale = preset_scales[preset_scales.length - 1];
+	function decrease_scale() {
+		current = parseFloat(document.getElementById("scale_input").value);
+		if (current <= preset_scales[0]) 
+			new_scale = current / 2.0;
+		else if (current > max_preset_scale)
+			if (current <= max_preset_scale + 100)
+				new_scale = max_preset_scale;
+			else 
+				new_scale = current - 100;
+		else
+			for (let i = 1; i <= preset_scales.length - 1; i++)
+				if (preset_scales[i] >= current) {
+					new_scale = preset_scales[i - 1]; break;
+				}
+		document.getElementById("scale_input").value = new_scale;
+		change_scale();
+	}
+	function increase_scale() {
+		current = parseFloat(document.getElementById("scale_input").value);
+		if (current >= max_preset_scale)
+			new_scale = current + 100;
+		else if (current < preset_scales[0]) 
+			if (current >= preset_scales[0] / 2.0)
+				new_scale = preset_scales[0];
+			else 
+				new_scale = current * 2.0;
+		else
+			for (let i = preset_scales.length - 2; i >= 0; i--)
+				if (preset_scales[i] <= current) {
+					new_scale = preset_scales[i + 1]; break;
+				}
+			document.getElementById("scale_input").value = new_scale;
+		change_scale();
+	}
+	function change_scale() {
+		plot_scale = document.getElementById("scale_input").value / 100.0;
+		Draw(false);
+	}
+	function reset_scale() {
+		document.getElementById("scale_input").value = 100;
+		change_scale();
+	}
+
+	var inputBox = $("#choose_alpha");
+	var submitButton = $("#choose_alpha_submit");
+	alpha = document.getElementById("choose_alpha").value;
+	console.log(alpha);
+
+	function change_alpha(){
+		new_alpha = $("#choose_alpha").val()
+		if (typeof new_alpha === 'undefined' || isNaN(new_alpha) || new_alpha <= 0 || new_alpha >= 1) 
+			alert('Please enter a number (significance level) in (0, 1).');
+		else if (new_alpha != alpha) {
+			alpha = new_alpha;
+			console.log("Significance level changed to " + alpha);
+			Draw(true);
+		}
+	}
+
+	inputBox.change(change_alpha);
+	submitButton.click(change_alpha);
+
 
 </script>
 
@@ -194,70 +274,6 @@ $("#reset_slider_submit").click(function(){
 	document.getElementById("slider").value = 50;
 	change_slider();
 })*/
-
-var preset_scales = [25, 33.3, 50, 66.7, 75, 80, 90, 100, 110, 125, 150, 175, 200, 250, 300, 400, 500],
-	max_preset_scale = preset_scales[preset_scales.length - 1];
-function decrease_scale() {
-	current = parseFloat(document.getElementById("scale_input").value);
-	if (current <= preset_scales[0]) 
-		new_scale = current / 2.0;
-	else if (current > max_preset_scale)
-		if (current <= max_preset_scale + 100)
-			new_scale = max_preset_scale;
-		else 
-			new_scale = current - 100;
-	else
-		for (let i = 1; i <= preset_scales.length - 1; i++)
-			if (preset_scales[i] >= current) {
-				new_scale = preset_scales[i - 1]; break;
-			}
-	document.getElementById("scale_input").value = new_scale;
-	change_scale();
-}
-function increase_scale() {
-	current = parseFloat(document.getElementById("scale_input").value);
-	if (current >= max_preset_scale)
-		new_scale = current + 100;
-	else if (current < preset_scales[0]) 
-		if (current >= preset_scales[0] / 2.0)
-			new_scale = preset_scales[0];
-		else 
-			new_scale = current * 2.0;
-	else
-		for (let i = preset_scales.length - 2; i >= 0; i--)
-			if (preset_scales[i] <= current) {
-				new_scale = preset_scales[i + 1]; break;
-			}
-		document.getElementById("scale_input").value = new_scale;
-	change_scale();
-}
-function change_scale() {
-	plot_scale = document.getElementById("scale_input").value / 100.0;
-	Draw(false);
-}
-function reset_scale() {
-	document.getElementById("scale_input").value = 100;
-	change_scale();
-}
-
-var inputBox = $("#choose_alpha");
-var submitButton = $("#choose_alpha_submit");
-alpha = document.getElementById("choose_alpha").value;
-console.log(alpha);
-
-function change_alpha(){
-	new_alpha = $("#choose_alpha").val()
-	if (typeof new_alpha === 'undefined' || isNaN(new_alpha) || new_alpha <= 0 || new_alpha >= 1) 
-		alert('Please enter a number (significance level) in (0, 1).');
-	else if (new_alpha != alpha) {
-		alpha = new_alpha;
-		console.log("Significance level changed to " + alpha);
-		Draw(true);
-	}
-}
-
-inputBox.change(change_alpha);
-submitButton.click(change_alpha);
 
 
 </script>
