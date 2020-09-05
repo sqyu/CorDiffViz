@@ -34,8 +34,8 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 	d3.selectAll('.scatplottitle2').remove(); 
 	scatprompt.selectAll('g').remove();
 
-	var Y_extent1 = d3.extent((is_X_Y ? dat1_Y : dat1).dat[col]),
-		X_extent1 = d3.extent((is_X_Y ? dat1_X : dat1).dat[row]);
+	var Y_extent1 = d3.extent((is_X_Y ? dat1_Y : dat1)[col]),
+		X_extent1 = d3.extent((is_X_Y ? dat1_X : dat1)[row]);
 
 	var xScale1 = d3.scaleLinear()
 		.domain(flipped ? X_extent1 : Y_extent1) // Recall: x is the col coordinate, but X is the data indexed by rows
@@ -51,8 +51,8 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 		.ticks(num_ticks)
 
 	if (two){
-		var Y_extent2 = d3.extent((is_X_Y ? dat2_Y : dat2).dat[col]),
-			X_extent2 = d3.extent((is_X_Y ? dat2_X : dat2).dat[row]);
+		var Y_extent2 = d3.extent((is_X_Y ? dat2_Y : dat2)[col]),
+			X_extent2 = d3.extent((is_X_Y ? dat2_X : dat2)[row]);
 		var xScale2 = d3.scaleLinear()
 			.domain(flipped ? X_extent2 : Y_extent2)
 			.range([0, w_scat * plot_scale]);
@@ -105,11 +105,11 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 	var X_name = vars_X[row];
 		Y_name = vars_Y[col];
 	if (flipped) {
-		var cx_dat1 = function(d) {return (is_X_Y ? dat1_X : dat1).dat[row][d];}
-		var cy_dat1 = function(d) {return (is_X_Y ? dat1_Y : dat1).dat[col][d];};
+		var cx_dat1 = function(d) {return (is_X_Y ? dat1_X : dat1)[row][d];}
+		var cy_dat1 = function(d) {return (is_X_Y ? dat1_Y : dat1)[col][d];};
 	} else {
-		var cx_dat1 = function(d) {return (is_X_Y ? dat1_Y : dat1).dat[col][d];}
-		var cy_dat1 = function(d) {return (is_X_Y ? dat1_X : dat1).dat[row][d];};
+		var cx_dat1 = function(d) {return (is_X_Y ? dat1_Y : dat1)[col][d];}
+		var cy_dat1 = function(d) {return (is_X_Y ? dat1_X : dat1)[row][d];};
 	}
 	var cx_func1 = function(d) {return xScale1(cx_dat1(d));},
 		cy_func1 = function(d) {return yScale1(cy_dat1(d));};
@@ -151,10 +151,10 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 		if (whichdat) {
 			d3.selectAll('.scatplottitle1').remove();
 			// If is_X_Y, dat1_X and dat1_Y have the same indices so does not matter
-			plot_scatter_title(true, "ID " + cut_string((is_X_Y ? dat1_X : dat1).ind[d], 8) + ", " + plot1_name + ", " + "(" + rounding(cx_dat1(d), 3) + ", " + rounding(cy_dat1(d), 3) + ")");
+			plot_scatter_title(true, "ID " + cut_string(ind_first[d], 8) + ", " + plot1_name + ", " + "(" + rounding(cx_dat1(d), 3) + ", " + rounding(cy_dat1(d), 3) + ")");
 		} else {
 			d3.selectAll('.scatplottitle2').remove();
-			plot_scatter_title(false, "ID " + cut_string((is_X_Y ? dat2_X : dat2).ind[d], 8) + ", " + plot2_name + ", " + "(" + rounding(cx_dat2(d), 3) + ", " + rounding(cy_dat2(d), 3) + ")");
+			plot_scatter_title(false, "ID " + cut_string(ind_second[d], 8) + ", " + plot2_name + ", " + "(" + rounding(cx_dat2(d), 3) + ", " + rounding(cy_dat2(d), 3) + ")");
 		}
 	}
 
@@ -219,11 +219,11 @@ var drawScatter = function(col, row, whichrawdat, flipped) {
 
 	if (two){
 		if (flipped) {
-			var cx_dat2 = function(d) {return (is_X_Y ? dat2_X : dat2).dat[row][d];}
-			var cy_dat2 = function(d) {return (is_X_Y ? dat2_Y : dat2).dat[col][d];};
+			var cx_dat2 = function(d) {return (is_X_Y ? dat2_X : dat2)[row][d];}
+			var cy_dat2 = function(d) {return (is_X_Y ? dat2_Y : dat2)[col][d];};
 		} else {
-			var cx_dat2 = function(d) {return (is_X_Y ? dat2_Y : dat2).dat[col][d];}
-			var cy_dat2 = function(d) {return (is_X_Y ? dat2_X : dat2).dat[row][d];};
+			var cx_dat2 = function(d) {return (is_X_Y ? dat2_Y : dat2)[col][d];}
+			var cy_dat2 = function(d) {return (is_X_Y ? dat2_X : dat2)[row][d];};
 		}
 		var cx_func2 = function(d) {return xScale2(cx_dat2(d));},
 			cy_func2 = function(d) {return yScale2(cy_dat2(d));};
@@ -281,7 +281,6 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 	d3.selectAll('#activated_cell').remove();
 	console.log("D3 Showing "+datfile);
 
-	console.log(svg);
 	scatterplot_height = (two ? (h-h_btw_scat-labelsize)/2 - tickandaxis : h-tickandaxis) * plot_scale;
 
 	var svg_elt = document.getElementById("svg"),
@@ -379,7 +378,7 @@ function drawD3(cortype, testtype, two, datfile, whichrawdat="first"){
 		})
 		.style('pointer-events', 'all');
 
-	//console.log(corrmat)
+	console.log(corrmat)
 
 	var rects = cells.append('rect')
 		.attrs({

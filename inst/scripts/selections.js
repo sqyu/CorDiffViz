@@ -20,11 +20,11 @@ function toggle_div() {
 function Draw(only_alpha_changed = false) {
 	console.log(whichlayout);
 	var datfile = datafilename(cortype, testtype, two, whichdata);
-	if (testtype == "raw" || (two && cortype === "pearson" && testtype === "cai")) { // Does not depend on significance level, no need to threshold or replot on change of alpha
-		if (only_alpha_changed) // If only alpha changed, no need to replot
+	if (testtype == "raw" || (two && cortype === "pearson" && testtype === "cai")) { // Does not depend on significance level, no need to threshold or replot on change of alpha if variables not changed
+		if (only_alpha_changed && !varselected_changed) // If only alpha changed, no need to replot
 			return;
 		var total_nonzero = 0;
-		if (typeof window["prop_" + datfile] === "undefined") { // Calculate the proportion of non-zero entries for the first time
+		if (typeof window["prop_" + datfile] === "undefined" || varselected_changed) { // Calculate the proportion of non-zero entries for the first time
 			var total_nonzero = 0, corrmat = window[datfile + "_mat"];
 			console.log(corrmat);
 			if (is_X_Y) { // Sum up and divide
@@ -38,7 +38,7 @@ function Draw(only_alpha_changed = false) {
 	           	window["prop_" + datfile] = total_nonzero * 200.0 / (nvar_X * (nvar_X - 1));
 			}
 		}
-	} else if (typeof window[datfile + "_alpha"] === 'undefined' || window[datfile + "_alpha"] != alpha) { // Re-threshold only if alpha has changed since last thresholding for this matrix
+	} else if (typeof window[datfile + "_alpha"] === 'undefined' || window[datfile + "_alpha"] != alpha || varselected_changed) { // Re-threshold only if variables changed or alpha has changed since last thresholding for this matrix
 			console.log("Thresholding for " + datfile + " with alpha = " + alpha);
 			var raw_mat = window[datafilename(cortype, "raw", two, whichdata) + "_mat"], 
 				ps = window[datfile + "_p_mat"],

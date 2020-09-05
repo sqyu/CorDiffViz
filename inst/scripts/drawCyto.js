@@ -7,6 +7,7 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
     d3.selectAll('#activated_cell').remove(); // Clicked-on cell in the correlation matrix
 	scatterplot1.selectAll('g').remove();
 	scatterplot2.selectAll('g').remove();
+    console.log(vars_X);
 
 	if (is_X_Y) {
 		node_color_style = [{
@@ -131,7 +132,6 @@ function drawCyto(cortype, testtype, two, datfile, whichrawdat, whichlayout){
                     "grabbed": false, "grabble": true, "classes": ""
                 }]);
         }
-
 
     console.log(cy.nodes().degree(false));
 
