@@ -27,7 +27,7 @@ Install the R package, and in R call the
 ```R
 CorDiffViz::viz()
 ```
-function on the data matrices; an example is given [here](demo/demo.R). For the arguments of the function, consult the R documentation by calling```?CorDiffViz::viz```.
+function on the data matrices; an example is given [here](demo/demo.R). For the arguments of the function, consult the R documentation by calling```?CorDiffViz::viz```. The main data matrices required by the function should have measurements for one sample in each row, and each column should correspond to one variable.
 
 After the R code finishes running, you can open ```viz.html``` in your **current R working directory** from your local browser ([Chrome](https://www.google.com/chrome/)/[Firefox](https://www.mozilla.org/firefox/)) for visualizations of the estimates. Although less interesting, under your **current R working directory**, the ```plots``` folder contains some static graphs and heatmaps for your reference. Data files are located in the ```dats``` folder.
 
