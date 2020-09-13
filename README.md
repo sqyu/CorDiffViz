@@ -26,7 +26,7 @@ CorDiffViz::viz()
 ```
 function on the data matrices; an example is given [here](demo/demo.R). For the arguments of the function, consult the R documentation by calling```?CorDiffViz::viz```.
 
-After the R code finishes running, you can open ```viz.html``` in your current R working directory from your local browser ([Chrome](https://www.google.com/chrome/)/[Firefox](https://www.mozilla.org/firefox/)) for visualizations of the estimates. Although less interesting, the ```plots``` folder contains some static graphs and heatmaps for your reference.
+After the R code finishes running, you can open ```viz.html``` in your **current R working directory** from your local browser ([Chrome](https://www.google.com/chrome/)/[Firefox](https://www.mozilla.org/firefox/)) for visualizations of the estimates. Although less interesting, under your **current R working directory**, the ```plots``` folder contains some static graphs and heatmaps for your reference. Data files are located in the ```dats``` folder.
 
 # If you manually changed the auto-generated files
 After calling ```CorDiffViz::viz()``` to do the estimation, the visualization file ```viz.html``` and the generated data should automatically be in your current working directory in R. Just open the html from [Chrome](https://www.google.com/chrome/) or [Firefox](https://www.mozilla.org/firefox/) to see the visualizations and nothing else needs to be done. 
