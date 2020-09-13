@@ -211,11 +211,17 @@ save_print_plot_diff <- function(mat, thresholded_mat, cor_name, mode, Xnames, Y
 #' @param Cai_seed A number, seed for the method by Cai and Zhang; defaults to \code{NULL}.
 #' @param layout_seed A number, seed for the layout of the static graphs; defaults to \code{NULL}.
 #' @details
+#' To estimate the differential correlations under two conditions (1 and 2), \code{dat1X} and \code{dat2X} should contain data for conditions 1 and 2, respectively. For both \code{dat1X} and \code{dat2X}, each row should contain the measurements for one sample/observation/subject, and each column corresponds to one variable/covariate. \code{dat1Y} and \code{dat2Y} should be set to \code{NULL}.
+#' 
+#' To estimate the differential correlations between variables in group X and variables in group Y under two conditions, \code{dat1X} and \code{dat2X} should contain data for conditions 1 and 2, respectively, whose columns correspond to variables in group X. Likewise, \code{dat1Y} and \code{dat2Y} should be non-\code{NULL} and contain measurements for variables in the Y group, under conditions 1 and 2, respectively.
+#' 
 #' If \code{dat1Y} and \code{dat2Y} are \code{NULL}, the function estimates the difference \code{cor(dat1X) - cor(dat2X)} and truncates to 0 the entries that are below a certain threshold determined by parameteric/permutation tests.
+#' 
 #' If \code{dat1Y} and \code{dat2Y} are not \code{NULL}, the difference \code{cor(dat1X, dat1Y) - cor(dat2X, dat2Y)} is estimated.
+#' 
 #' The dimensions must be as follows: \code{dat1X} has dimension n1 x pX, \code{dat2X} n2 x pX, and if provided, \code{dat1Y} n1 x pY and \code{dat2Y} n2 x pY.
-#' The column names will be used as names for each variable/covariate, and the row names will be used as identifier for each observation/subject.
-#' @return Does not return anything, but instead creates folders and files under \code{file.path("dats", dat_name)} and \code{file.path("plots", dat_name)}.
+#' The column names will be used as names for each variable/covariate, and the row names will be used as identifier for each sample/observation/subject.
+#' @return Does not return anything, but instead creates relevant folders and files under \code{file.path("dats", dat_name)} and \code{file.path("plots", dat_name)}. The folder \code{plots} contains static heat maps for the user, while the folder \code{dats} contains data files internally used by the interactive visualization \code{HTML} file. 
 #' @examples
 #' dat0 <- read.csv(file.path(path.package("CorDiffViz"), "extdata/sample_data.csv"))
 #' # First column of dat0 is the group (dat1 or dat2)
