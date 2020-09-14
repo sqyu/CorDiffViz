@@ -3,16 +3,16 @@ var is_X_Y = (typeof vars_X !== 'undefined');
 if (is_X_Y) {
 	var ind_first = dat_first_X.ind,
 		ind_second = dat_second_X.ind;
-	for (let i = 0; i < nvar_X; i++)
+	for (let i = 0; i < vars_X.length; i++)
 		vars_X[i] = cut_string(vars_X[i], 15);
-	for (let i = 0; i < nvar_Y; i++)
+	for (let i = 0; i < vars_Y.length; i++)
 		vars_Y[i] = cut_string(vars_Y[i], 15);
 } else {
 	var ind_first = dat_first.ind,
 		ind_second = dat_second.ind,
 		vars_X = vars_Y = vars;
 
-	for (let i = 0; i < nvar_X; i++)
+	for (let i = 0; i < vars.length; i++)
 		vars[i] = cut_string(vars[i], 15);
 }
 var nind_first = ind_first.length,
@@ -67,7 +67,6 @@ function slice_data_for_vars(selected_bools_X, selected_bools_Y=null) {
 			} else if (varname.substring(0,3) == 'dat') { // Data matrix
 				if (varname === "dat_first_Y" || varname === "dat_second_Y")
 					for (var i = 0; i < window[varname_orig].length; ++i) {
-						if (typeof vars_Y_orig !== "undefined")
 						if (selected_bools_Y[i]) {
 							window[varname][shifted_indices_Y[i]] = [];
 							for (var j = 0; j < window[varname_orig][i].length; ++j)
@@ -76,7 +75,6 @@ function slice_data_for_vars(selected_bools_X, selected_bools_Y=null) {
 					}
 				else 
 					for (var i = 0; i < window[varname_orig].length; ++i) {
-						if (typeof vars_X_orig !== "undefined")
 						if (selected_bools_X[i]) {
 							window[varname][shifted_indices_X[i]] = [];
 							for (var j = 0; j < window[varname_orig][i].length; ++j)
@@ -92,10 +90,11 @@ function slice_data_for_vars(selected_bools_X, selected_bools_Y=null) {
 varselected = new Array(nvar_X).fill(true);
 if (is_X_Y)
 	varselected_Y = new Array(nvar_Y).fill(true);
-slice_data_for_vars(varselected, is_X_Y ? varselected_Y : null);
 
 vars_X_orig = [...vars_X];
 vars_Y_orig = [...vars_Y];
+
+slice_data_for_vars(varselected, is_X_Y ? varselected_Y : null);
 
 if (nvar_Y > nvar_X) { // more variables to plot on the x axis, make h smaller and fill the margin
 	h_smaller = h - h / nvar_Y * nvar_X;
@@ -104,7 +103,6 @@ if (nvar_Y > nvar_X) { // more variables to plot on the x axis, make h smaller a
 	w_smaller = w - w / nvar_X * nvar_Y;
 	h_smaller = 0;
 }
-
 
 function cut_string(s, len) {
 	if (s.length > len)
