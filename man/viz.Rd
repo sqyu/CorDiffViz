@@ -5,7 +5,7 @@
 \title{Main function for estimating and writing self/differential correlation matrices to local files.}
 \usage{
 viz(
-  dat_name,
+  run_name,
   dat1X,
   dat2X,
   dat1Y = NULL,
@@ -27,7 +27,7 @@ viz(
 )
 }
 \arguments{
-\item{dat_name}{A string, a given name for this dataset. Files for visualization will be saved under \code{file.path("dats", dat_name)}.}
+\item{run_name}{A string, a given name for this run/function call. Files for visualization will be saved under \code{file.path("dats", run_name)}. Examples include \code{MyFirstData_run1}, \code{MyFirstData_run2}, \code{MySecondData_run1}, where each call is run with different arguments to \code{viz()}, e.g. on different datasets or with different parameters.}
 
 \item{dat1X}{A matrix data for group X for the first sample; see details. Must not be \code{NULL} and must have the same number of columns as \code{dat2X}.}
 
@@ -45,7 +45,7 @@ viz(
 
 \item{permutation}{Logical, indicating whether permutation tests should be done in addition to parametric tests; defaults to \code{TRUE}.}
 
-\item{alpha}{Numerical, the significance level in hypothesis testing; defaults to 0.05.}
+\item{alpha}{Numerical, the significance level in hypothesis testing; defaults to 0.05. Used to produce the heat maps. This parameter does not affect the interactive visualization in the browser since the user can manually change the significance level there.}
 
 \item{sides}{A number \code{1}, \code{2}, \code{3} or a matrix containing \code{1}, \code{2}, \code{3}. If a matrix, must be of size \code{ncol(dat1X) x ncol(dat1X)} if \code{dat1Y} is \code{NULL}, or \code{ncol(dat1X) x ncol(dat1Y)} otherwise. \code{2} stands for two-sided tests, \code{1} for one-sided test with null hypothesis being the corresponding entries >= 0 (the corresponding correlation for sample 1 stronger than that for sample 2), and \code{3} for one-sided test with null hypothesis being the corresponding entries <= 0.}
 
@@ -57,7 +57,7 @@ viz(
 
 \item{verbose}{A logical, whether to print progress; defaults to \code{TRUE}.}
 
-\item{make_plot}{A logical, whether to make heat maps and static graphs; defaults to \code{TRUE}. Plots will be made under \code{file.path("plots", dat_name)}.}
+\item{make_plot}{A logical, whether to make heat maps and static graphs; defaults to \code{TRUE}. Plots will be made under \code{file.path("plots", run_name)}.}
 
 \item{perm_seed}{A number, seed for permutation test; defaults to \code{NULL}.}
 
@@ -66,7 +66,7 @@ viz(
 \item{layout_seed}{A number, seed for the layout of the static graphs; defaults to \code{NULL}.}
 }
 \value{
-Does not return anything, but instead creates relevant folders and files under \code{file.path("dats", dat_name)} and \code{file.path("plots", dat_name)}. The folder \code{plots} contains static heat maps for the user, while the folder \code{dats} contains data files internally used by the interactive visualization \code{HTML} file.
+Does not return anything, but instead creates relevant folders and files under \code{file.path("dats", run_name)} and \code{file.path("plots", run_name)}. The folder \code{plots} contains static heat maps for the user, while the folder \code{dats} contains data files internally used by the interactive visualization \code{HTML} file.
 }
 \description{
 Main function for estimating and writing self/differential correlation matrices to local files.
@@ -74,11 +74,11 @@ Main function for estimating and writing self/differential correlation matrices 
 \details{
 To estimate the differential correlations under two conditions (1 and 2), \code{dat1X} and \code{dat2X} should contain data for conditions 1 and 2, respectively. For both \code{dat1X} and \code{dat2X}, each row should contain the measurements for one sample/observation/subject, and each column corresponds to one variable/covariate. \code{dat1Y} and \code{dat2Y} should be set to \code{NULL}.
 
-To estimate the differential correlations between variables in group X and variables in group Y under two conditions, \code{dat1X} and \code{dat2X} should contain data for conditions 1 and 2, respectively, whose columns correspond to variables in group X. Likewise, \code{dat1Y} and \code{dat2Y} should be non-\code{NULL} and contain measurements for variables in the Y group, under conditions 1 and 2, respectively.
+To estimate the differential cross-correlations between variables in group X and variables in group Y under two conditions, \code{dat1X} and \code{dat2X} should contain data for conditions 1 and 2, respectively, whose columns correspond to variables in group X. Likewise, \code{dat1Y} and \code{dat2Y} should be non-\code{NULL} and contain measurements for variables in the Y group, under conditions 1 and 2, respectively.
 
 If \code{dat1Y} and \code{dat2Y} are \code{NULL}, the function estimates the difference \code{cor(dat1X) - cor(dat2X)} and truncates to 0 the entries that are below a certain threshold determined by parameteric/permutation tests.
 
-If \code{dat1Y} and \code{dat2Y} are not \code{NULL}, the difference \code{cor(dat1X, dat1Y) - cor(dat2X, dat2Y)} is estimated.
+If \code{dat1Y} and \code{dat2Y} are not \code{NULL}, the difference in the cross-correlations \code{cor(dat1X, dat1Y) - cor(dat2X, dat2Y)} is estimated.
 
 The dimensions must be as follows: \code{dat1X} has dimension n1 x pX, \code{dat2X} n2 x pX, and if provided, \code{dat1Y} n1 x pY and \code{dat2Y} n2 x pY.
 The column names will be used as names for each variable/covariate, and the row names will be used as identifier for each sample/observation/subject.
@@ -89,13 +89,13 @@ dat0 <- read.csv(file.path(path.package("CorDiffViz"), "extdata/sample_data.csv"
 dat1 <- dat0[dat0$Group=="AA", 2:10][1:13,] # 13 x 9
 dat2 <- dat0[dat0$Group=="BB", 2:10][1:15,] # 15 x 9
 # Self correlations
-viz(dat_name="exmp_self", dat1X=dat1, dat2X=dat2, dat1Y=NULL, dat2Y=NULL,
+viz(run_name="exmp_self", dat1X=dat1, dat2X=dat2, dat1Y=NULL, dat2Y=NULL,
     name_dat1="AA", name_dat2="BB", 
     cor_names=c("pearson","spearman", "kendall","sin_spearman","sin_kendall"),
     permutation=TRUE, alpha=0.05, sides=2, B=1000, adj_method="BY", verbose=TRUE,
     make_plot=TRUE, parallel=FALSE, perm_seed=1, Cai_seed=1, layout_seed=1)
 # Correlations between variables in group X = {1:4} and variables in group Y = {5:9}
-viz(dat_name="exmp_XY", dat1X=dat1[,1:(ncol(dat1)/2)], dat2X=dat2[,1:(ncol(dat1)/2)], 
+viz(run_name="exmp_XY", dat1X=dat1[,1:(ncol(dat1)/2)], dat2X=dat2[,1:(ncol(dat1)/2)], 
     dat1Y=dat1[,(ncol(dat1)/2+1):ncol(dat1)], dat2Y=dat2[,(ncol(dat1)/2+1):ncol(dat1)], 
     name_dat1="AA", name_dat2="BB", 
     cor_names=c("pearson","spearman", "kendall","sin_spearman","sin_kendall"), 
