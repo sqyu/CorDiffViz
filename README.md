@@ -20,7 +20,7 @@ cor(dat1X, dat1Y) - cor(dat2X, dat2Y)
 (cross correlations) with thresholds determined by parametric tests, permutation tests, and the test from Cai and Zhang (2016).
 
 # Demo
-An interactive demo is available [here](https://l.etranger.me/cor4).
+An interactive demo is available [here](https://diffcornet.github.io/CorDiffViz/demo.html).
 
 # Usage
 Install the R package, and in R call the 
