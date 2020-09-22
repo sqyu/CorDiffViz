@@ -211,6 +211,8 @@ save_print_plot_diff <- function(mat, thresholded_mat, cor_name, mode, Xnames, Y
 #' @param Cai_seed A number, seed for the method by Cai and Zhang; defaults to \code{NULL}.
 #' @param layout_seed A number, seed for the layout of the static graphs; defaults to \code{NULL}.
 #' @details
+#' Files created can be found under the \strong{current working directory}.
+#' 
 #' To estimate the differential correlations under two conditions (1 and 2), \code{dat1X} and \code{dat2X} should contain data for conditions 1 and 2, respectively. For both \code{dat1X} and \code{dat2X}, each row should contain the measurements for one sample/observation/subject, and each column corresponds to one variable/covariate. \code{dat1Y} and \code{dat2Y} should be set to \code{NULL}.
 #' 
 #' To estimate the differential cross-correlations between variables in group X and variables in group Y under two conditions, \code{dat1X} and \code{dat2X} should contain data for conditions 1 and 2, respectively, whose columns correspond to variables in group X. Likewise, \code{dat1Y} and \code{dat2Y} should be non-\code{NULL} and contain measurements for variables in the Y group, under conditions 1 and 2, respectively.
@@ -221,7 +223,7 @@ save_print_plot_diff <- function(mat, thresholded_mat, cor_name, mode, Xnames, Y
 #' 
 #' The dimensions must be as follows: \code{dat1X} has dimension n1 x pX, \code{dat2X} n2 x pX, and if provided, \code{dat1Y} n1 x pY and \code{dat2Y} n2 x pY.
 #' The column names will be used as names for each variable/covariate, and the row names will be used as identifier for each sample/observation/subject.
-#' @return Does not return anything, but instead creates relevant folders and files under \code{file.path("dats", run_name)} and \code{file.path("plots", run_name)}. The folder \code{plots} contains static heat maps for the user, while the folder \code{dats} contains data files internally used by the interactive visualization \code{HTML} file. 
+#' @return Does not return anything, but instead creates relevant folders and files under the \strong{current working directory} under \code{file.path("dats", run_name)} and \code{file.path("plots", run_name)}. The folder \code{plots} contains static heat maps for the user, while the folder \code{dats} contains data files internally used by the interactive visualization \code{HTML} file. 
 #' @examples
 #' dat0 <- read.csv(file.path(path.package("CorDiffViz"), "extdata/sample_data.csv"))
 #' # First column of dat0 is the group (dat1 or dat2)
