@@ -1,4 +1,4 @@
-# CorDiffViz
+# CorDiffViz: an R Package for visualizing multi-omics differential correlation networks
 Code for estimating and visualizing differential correlation matrices for two samples.
 
 # Installation
