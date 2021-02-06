@@ -107,7 +107,7 @@ Cai <- function(X1, X2, Y1=NULL, Y2=NULL, dmax=10, hmax=5, fold=5, verbose=TRUE,
   }
   for (h in 1:hmax){
     #set.seed(h)
-    I1 <- sample.int(n1, round(n1*(1-1/fold))); I2 <- sample.int(n2, round(n1*(1-1/fold)));
+    I1 <- sample.int(n1, round(n1*(1-1/fold))); I2 <- sample.int(n2, round(n2*(1-1/fold)));
     X1_train <- X1[I1,]; X2_train <- X2[I2,]
     NI1 <- setdiff(1:n1, I1); NI2 <- setdiff(1:n2, I2)
     X1_test = X1[NI1,]; X2_test = X2[NI2,];
