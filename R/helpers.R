@@ -96,7 +96,7 @@ setup_js_html <- function(){
     if (grepl("folder_names\\s*=", line)) {
       writeLines("folder_names = [", g)
       dat_names <- Filter(function(f){dir.exists(file.path("dats", f)) &&
-          all(c("cors.json", "dat.json", "diffs.json", "graphs.json") %in% list.files(file.path("dats", f)))},
+          all(c("cors.json", "dat.json", "diffs.json") %in% list.files(file.path("dats", f)))},
           list.files("dats"))
       writeLines(c(paste("\t\"", unique(dat_names), "\"", collapse=",\n", sep=""), "]"), g)
       while (!grepl("^\\s*\\]", line)) # Skip all lines until hitting the first "]"
