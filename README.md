@@ -29,6 +29,8 @@ CorDiffViz::viz()
 ```
 function on the data matrices; an example is given [here](demo/demo.R). For the arguments of the function, consult the R documentation by calling```?CorDiffViz::viz```. The main data matrices required by the function should have measurements for one sample in each row, and each column should correspond to one variable.
 
+When calling the function, the package automatically estimates the (differential) correlation matrices, and performs permutation and parametric tests as instructed by the user. The user may run the function multiple times (with different arguments) on multiple datasets by assigning a different name to each run; each run can be visualized by selecting it from a dropdown menu in \texttt{viz.html}.
+
 After the R code finishes running, you can open ```viz.html``` in your **current R working directory** from your local browser ([Chrome](https://www.google.com/chrome/)/[Firefox](https://www.mozilla.org/firefox/)) for visualizations of the estimates. Although less interesting, under your **current R working directory**, the ```plots``` folder contains some static graphs and heatmaps for your reference. Data files are located in the ```dats``` folder.
 
 # If you manually changed the auto-generated files
@@ -58,3 +60,8 @@ The ```viz.html``` file you are trying to open and its auxiliary ```scripts``` f
 If you delete some of the sub-folders in ```dats``` or change their names you must run ```CorDiffViz::setup_js_html()``` from the directory that contains ```viz.html```, ```scripts``` and ```dats```, i.e. from ```my_experiment_folder``` in the example above.
 
 Similarly, if for some reason your ```viz.html``` and ```scripts``` are missing, simply run ```CorDiffViz::setup_js_html()``` from the folder where ```dats``` lies, i.e. from ```my_experiment_folder``` in the example above.
+
+
+# Details
+In the ```"Correlation Plots" mode```, the matrix in the center represents the raw or thresholded differential or original correlation matrix. The  The square/rectangle represents the matrix, with X variables on the vertical axis, and Y on the horizontal axis. Thus, the entry in the i-th row and j-th column represents cor(X_{k,i},Y_{k,j}) for one population k=1, 2, or their difference.  By hovering the mouse over an entry, its value in the matrix and the corresponding X and Y variables will be displayed; by clicking on the entry, the cell will be locked in and remains static whenever the mouse moves away from the correlation matrix area, and the corresponding scatter plots (for one population or both depending on the selection) will be drawn on the right. The raw correlations are included in the title(s) of the scatterplot(s). Clicking on either axis of the scatterplot(s) swaps the roles of the two variables; hovering over a point shows its corresponding values and the subject ID as specified in the row names of the data matrix provided to ```viz()```.
+
