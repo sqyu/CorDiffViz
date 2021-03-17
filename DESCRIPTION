@@ -1,7 +1,7 @@
 Package: CorDiffViz
 Type: Package
 Title: Visualization for Differential Correlation Matrices
-Version: 0.2.3
+Version: 0.2.4
 Author: Shiqing Yu, Anru Zhang (for Cai_Zhang.R)
 Maintainer: Shiqing Yu <sqyu@uw.edu>
 Description: R Package for Visualizing Differential Correlations.  
@@ -21,5 +21,5 @@ Imports:
     stringr,
     utils
 RdMacros: Rdpack
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr

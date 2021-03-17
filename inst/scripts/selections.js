@@ -43,6 +43,14 @@ function Draw(only_alpha_changed = false) {
 			var raw_mat = window[datafilename(cortype, "raw", two, whichdata) + "_mat"], 
 				ps = window[datfile + "_p_mat"],
 				total_nonzero = 0;
+			if (raw_mat === undefined) {
+				console.log(datafilename(cortype, "raw", two, whichdata) + "_mat does not exist!")
+				return;
+			}
+			if (ps === undefined) {
+				console.log(datfile + "_p_mat does not exist!")
+				return;				
+			}
 			window[datfile + "_mat"] = [];
 			for (var i = 0; i < raw_mat.length; ++i) {
 				var this_significant = (ps[i].value <= alpha);
