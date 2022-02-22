@@ -368,7 +368,7 @@ viz <- function(run_name, dat1X, dat2X, dat1Y=NULL, dat2Y=NULL, name_dat1="1", n
     ########## Two-sample difference in raw correlations using Cai and Zhang ##########
     if (cor_type == "pearson"){
       if (verbose) cat(rep("*",40), "\nTesting difference using Cai and Zhang:\n", sep="")
-      Cai_diff <- Cai(dat1X, dat2X, dat1Y, dat2Y, dmax=100, hmax=5, fold=5, verbose=verbose, seed=Cai_seed) ## Pearson only, 11.819681%
+      Cai_diff <- Cai(dat1X, dat2X, dat1Y, dat2Y, dmax=100, hmax=5, fold=5, verbose=verbose, seed=Cai_seed)
       save_print_plot_diff(Cai_diff, Cai_diff, cor_name, "cai", Xnames, Ynames, verbose, make_plot, dat_folder, plot_folder, layout_seed)
     }
     ########## Two-sample difference in raw correlations using parametric tests ##########

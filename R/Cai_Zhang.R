@@ -123,6 +123,10 @@ Cai <- function(X1, X2, Y1=NULL, Y2=NULL, dmax=10, hmax=5, fold=5, verbose=TRUE,
       delta <- (d-1)/dmax
       D_hat <- adp.D.hat(X1_train, X2_train, Y1_train, Y2_train, delta)  # Direct estimate of the difference
       loss_cross_fro[d] <- loss_cross_fro[d] + norm(D_hat - samp_diff, "F")^2
+      if (is.na(loss_cross_fro[d])) {
+        warning("loss_cross_fro[", d, "] is NA; decreasing fold to ", fold-1, " and rerunning Cai().")
+        return (Cai(X1, X2, Y1, Y2, dmax=dmax, hmax=hmax, fold=fold-1, verbose=verbose, seed=seed))
+      }
       if (verbose){
         utils::setTxtProgressBar(pb, count); count <- count + 1
       }
